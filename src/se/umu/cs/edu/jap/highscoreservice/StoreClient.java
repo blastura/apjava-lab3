@@ -50,7 +50,6 @@ public class StoreClient {
                 new HighScoreServiceClient(new URL(url));
             String reply = client.store(entry);
 
-            System.out.println("stored entry");
         } catch (Exception e) {
             e.printStackTrace();
         }

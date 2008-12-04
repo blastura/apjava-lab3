@@ -14,6 +14,8 @@ import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import se.umu.cs.edu.jap.highscoreservice.stubs.FailureFaultException;
 import java.util.logging.Logger;
+import java.io.StringWriter;
+import javax.xml.stream.XMLOutputFactory;
 
 public class HighScoreServiceClient {
     // Logger
@@ -144,23 +146,67 @@ public class HighScoreServiceClient {
             e.printStackTrace();
         }
         // TODO: If this happend something went wrong?
-        return new String[] {"Something wen't wrong?"};
+        return new String[] {"Something went wrong?"};
     }
+    
+    
+    /**
+     * Retriev all entries from service.
+     *
+     * @return All entries from the service.
+     */
+    public Entry[] retrieve() {
+        final String method = "retrieve";
+        OMFactory factory = OMAbstractFactory.getOMFactory();
+        OMNamespace namespace = factory.createOMNamespace(SERVICE, method);
+        
+        // create a request
+        OMElement request
+            = factory.createOMElement("RetrieveRequest", namespace);
+        
+        // Configure connection
+        Options options = new Options();
+        options.setTo(new EndpointReference(url.toString()));
+        // TODO: Make sure the right Constants are imported
+        options.setTransportInProtocol(Constants.TRANSPORT_HTTP);
+        options.setAction(method);
 
+        // Create a client
+        try {
+            ServiceClient client = new ServiceClient();
+            client.setOptions(options);
+            
+            // Try send request and receive response
+            OMElement response = client.sendReceive(request);
+
+            // test / debug
+            printDebug("RESPONSE", response);
+            
+            // Return result Response is one or more elements "RetrieveResponse"
+            // with an element "score" of type "EntryType""
+            return parseScores(response);
+        } catch (AxisFault e) {
+            //TODO - fix error message
+            e.printStackTrace();
+        }
+        // Something went wrong.
+        return new Entry[] {};
+    }
+    
     /**
      * Parse response Element (<xsd:element name="RetrieveResponse"
      * type="tns:RetrieveResponseType"/>), create and return an Entry made from
      * the respone.
-     * TODO: doc
+     * TODO: doc and maybe rename method and parameter.
      * @param responseElement 
      * @return 
      */
-    public Entry[] parseRespons(OMElement response) {
+    public Entry[] parseScores(OMElement scores) {
         // parse and echo response
         ArrayList<Entry> entryList = new ArrayList<Entry>();
         
         @SuppressWarnings("unchecked") // Doesn't support generics
-            Iterator<OMElement> elementIterator = response.getChildElements();
+            Iterator<OMElement> elementIterator = scores.getChildElements();
         while (elementIterator.hasNext()) {
             OMElement ge = elementIterator.next();
             @SuppressWarnings("unchecked") // Doesn't support generics
@@ -187,9 +233,26 @@ public class HighScoreServiceClient {
         if (propertyDebugMessages != null) {
             if (Boolean.parseBoolean(propertyDebugMessages) == true) {
                 System.out.println(message);
-                // Changed toString()
                 System.out.println(element.toString());
             }
+        }
+    }
+
+    /**
+     * TODO: Copied code, prints exactly the same as element.toString()
+     *
+     * @param element 
+     * @return 
+     */
+    private static String toString (OMElement element) {
+        try {
+            StringWriter writer = new StringWriter();
+            XMLOutputFactory factory = XMLOutputFactory.newInstance();
+            element.serialize(factory.createXMLStreamWriter(writer));
+            writer.flush();
+            return writer.toString();
+        } catch (Exception e) {
+            return "[unable to transform element to string]";
         }
     }
 }
