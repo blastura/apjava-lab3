@@ -1,0 +1,386 @@
+\documentclass[a4paper, 12pt]{article}
+\usepackage[swedish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{verbatim}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{parskip}
+% Include pdf with multiple pages ex \includepdf[pages=-, nup=2x2]{filename.pdf}
+\usepackage[final]{pdfpages}
+% Place figures where they should be
+\usepackage{float}
+
+% vars
+\def\title{RSS}
+\def\preTitle{Laboration 2}
+\def\kurs{Applikationsprogrammering i Java, HT-08}
+
+\def\namn{Anton Johansson}
+\def\mail{dit06ajn@cs.umu.se}
+ \def\pathtocode{$\sim$dit06ajn/edu/apjava/lab2}
+
+\def\handledareEtt{Johan Eliasson, johane@cs.umu.se}
+\def\handledareTva{Tor Sterner-Johansson, tors@cs.umu.se}
+\def\handledareTre{Daniel Henriksson, danielh@cs.umu.se}
+
+\def\inst{datavetenskap}
+\def\dokumentTyp{Laborationsrapport}
+
+\begin{document}
+\begin{titlepage}
+  \thispagestyle{empty}
+  \begin{small}
+    \begin{tabular}{@{}p{\textwidth}@{}}
+      UMEÅ UNIVERSITET \hfill \today \\
+      Institutionen för \inst \\
+      \dokumentTyp \\
+    \end{tabular}
+  \end{small}
+  \vspace{10mm}
+  \begin{center}
+    \LARGE{\preTitle} \\
+    \huge{\textbf{\kurs}} \\
+    \vspace{10mm}
+    \LARGE{\title} \\
+    \vspace{15mm}
+    \begin{large}
+        \namn, \mail \\
+        \texttt{\pathtocode}
+    \end{large}
+    \vfill
+    \large{\textbf{Handledare}}\\
+    \mbox{\large{\handledareEtt}}
+    \mbox{\large{\handledareTva}}
+    \mbox{\large{\handledareTre}}
+  \end{center}
+\end{titlepage}
+
+\pagestyle{fancy}
+\rhead{\today}
+\lhead{\namn, \mail}
+\chead{}
+\lfoot{}
+\cfoot{}
+\rfoot{}
+
+\tableofcontents
+\newpage
+
+\rfoot{\thepage}
+\pagenumbering{arabic}
+
+\section{Problemspecifikation}\label{Problemspecifikation}
+% Beskriv med egna ord vad uppgiften gick ut på. Är det någonting som
+% varit oklart och ni gjort egna tolkningar så beskriv dessa.
+Denna laboration gick ut på att skriva en RSS-läsare med grafiskt
+användargränssnitt i programmeringsspråket Java. RSS står för Really
+Simple Syndication och är ett filformat som används för att på ett
+standardiserat sätt spara undan information i en lista. Oftast består
+denna information av något typ av artikel.
+
+En RSS-läsare fungerar ungefär som en mailklient, det vill säga
+användare kan välja att prenumerera på valda RSS-flöden. Läsaren visar
+upp artiklarna som finns i RSS-flödet, dessa kan läsas och markeras då
+oftast som lästa på något sätt.
+
+Exempel på RSS-flöde:\\
+\verb!http://sydsvenskan.se/senastenytt/?context=senasteNyttRss!
+
+Problemspecifikation finns i original på:\\
+\verb!http://www.cs.umu.se/kurser/5DV085/HT08/labbar/lab2.html!
+
+\section{Användarhandledning}\label{Anvandarhandledning}
+% Förklara var programmet och källkoden ligger samt hur man startar,
+% kompilerar och använder det.
+Programmet ligger i katalogen:\\
+\texttt{\pathtocode}
+
+Från denna katalog kompileras programmet med kommandot:
+
+\verb!salt:~/edu/apjava/lab2> ant!
+
+De kompilerade filerna hamnar i underkatalogen \verb!bin!. Från denna
+katalog körs programmet med kommandot
+
+\verb!salt:~/edu/apjava/lab2/bin> java -cp .:../lib/jdom.jar JeedReader!
+
+Alternativt kan programmet köras direkt från huvudmappen med
+kommandot:
+
+\verb!salt:~/edu/apjava/lab2> ant test-run!
+
+När programmet startar läses föregående sparade flöden från katalogen
+\verb!bin/config! in. Är det första gången programmet startar kommer
+denna katalog att vara tom. Finns det flöden i katalogen kommer
+gränssnittet att se ut ungefär som i figur \ref{fig:gui-out}.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=110mm]{images/gui-out.png}
+    \caption{Användargränssnitt}
+    \label{fig:gui-out}
+  \end{center}
+\end{figure}
+
+Gränssnittet består en lista till vänster som innehåller flöden
+användaren lagt till. Ovan till höger visas titeln för varje artikel i
+valt flöde och under visas beskrivningen av vald artikel.
+
+När en artikel är vald markeras denna som läst genom att texten
+\verb!(Ny)! försvinner från dess titel i listan. Det går att lägga
+till nya flöden via knappen \textit{Add} eller via menyn
+\textit{Feeds/Add feed}.
+
+För att uppdatera alla flöden används knappen \textit{Refresh} eller
+menyvalet \textit{Feeds/Update~all~feeds}. För att enbart uppdatera
+markerat flöde används menyvalet \textit{Feeds/Update~selected~feed},
+varje flöde uppdateras även varje gång de markeras i listan.
+
+Källkoden ligger i underkatalogen \verb!src!.
+
+\section{Systembeskrivning}\label{Systembeskrivning}
+% Beskriv översiktligt hur programmet är uppbyggt och hur det löser
+% problemet.
+Programmet är uppbyggt enligt \textit{Model-View-Controller}
+modell. De tre huvudklasserna som driver programmet består av
+\textit{JeedReader} som motsvarar programmets \textit{Controller}-del,
+\textit{JeedView} som motsvarar \textit{View}-delen och
+\textit{JeedModel} som motsvarar \textit{Model}-delen. Utöver dessa
+finns även ett antal klasser som har hand om mer specifikt beteende,
+främst är dessa klasser till hjälp för klassen \textit{JeedReader}.
+
+\subsection{Feed.java}\label{Feed}
+Den abstrakta klassen \textit{Feed} implementerar alla funktioner som
+bör vara gemensamma för alla typer av flöden som ska kunna sparas i
+programmet. Främst är ''Get''- och ''Set''-metoder implementerade för
+information som rör flöden. Exempel på sådan information är flödets
+titel, URL, typ, version, beskrivning.
+
+Metoden \textit{toString()} är överlagrad för att returnera flödets
+titel. Detta används i det grafiska gränssnittet för att skriva ut
+flöden i en lista.
+
+Källkod finns i bilaga \ref{Feed.java}.
+
+\subsection{FeedItem.java}\label{FeedItem}
+Den abstrakta klassen \textit{FeedItem} implementerade alla funktioner
+som bör vara gemensamma för flödens artiklar. Främst är ''Get''- och
+''Set''-metoder implementerade för information som rör
+artiklar. Exempel på sådan information är artiklars titel,
+beskrivning, om artikeln är läst eller ej.
+
+Metoden \textit{toString()} är överlagrad för att returnera artikelns
+status, det vill säga om den är läst eller ej och dess titel. En läst
+artikel får strängen \textit{(Ny)} insatt före dess titel. Detta
+används i det grafiska gränssnittet för att skriva ut artiklar i en
+lista.
+
+Källkod finns i bilaga \ref{FeedItem.java}.
+
+\subsection{FeedOutputter.java}\label{FeedOutputter}
+Klassen \textit{FeedOutputter} skriver ut flöden, \ref{Feed}, till
+antingen en \textit{java.io.OutputStream} eller en
+\textit{java.io.Writer}. I ett mellanled skapas tillfälligt en instans
+av typen \textit{org.jdom.Document}, det är informationen i detta
+objekt som sedan skrivs ut. I nuläget hämtas inte all information ur
+flödet, se begränsningar sektion \ref{Begransningar}.
+
+Källkod finns i bilaga \ref{FeedOutputter.java}.
+
+\subsection{FeedParser.java}\label{FeedParser}
+\textit{FeedParser} är ett gränssnitt som alla parsers i programmet
+ska implementera. Gränssnittet innehåller en metod
+\textit{parse(org.jdom.Document)} som returnerar ett flöde av typen
+\textit{Feed}.
+
+Källkod finns i bilaga \ref{FeedParser.java}.
+
+\subsection{FeedUtil.java}\label{FeedUtil}
+Klassen \textit{FeedUtil} innehåller enbart statiska
+''hjälp\-metoder'' för resten av programmet. Metoder för att skapa
+flöden från textsträngar eller av \textit{java.net.URL} är
+implementerade.
+
+Metoden \textit{getFeedFiles()}\label{getFeedFiles()} returnerar alla
+flödes-filer som programmet sparar sina flöden i. Dessa filer ligger i
+katalogen \textit{config}, bestämd av konstanten \textit{CONF\_DIR} i
+klassen \textit{JeedReader}, och har filnamn som slutar med
+\verb!feed.xml!.
+
+Metoden \textit{getFeedParser(org.jdom.Document)} används internt i
+klassen för att returnera en korrekt implementation av gränssnittet
+\textit{FeedParser}. I nuläget returneras en instans av
+\textit{RssParser}, se sektion \ref{RssParser}, om root-elementet i
+det inskickade dokumentet är en \textit{rss}-tag och dess attribut
+\textit{version} består av strängen ''2.0''. Om det inskickade
+dokumentets root-element är en \textit{jss}-tag retureras en instans
+av \textit{JeedConfigParser}, se sektion \ref{JeedConfigParser}.
+
+Källkod finns i bilaga \ref{FeedUtil.java}.
+
+\subsection{JeedConfigParser.java}\label{JeedConfigParser}
+Klassen \textit{JeedConfigParser} utökar klassen \textit{RssParser}
+och överlagrar dess metoder \textit{parse(org.jdom.Document)} och
+\textit{parseItem(org.jdom.Element, RssItem)}. Denna utökade
+funktionalitet av \textit{RssParser} hanterar dokument som är sparade
+av själva programmet. Dessa dokument har en \textit{jss}-tag som root-element
+artiklar med ett attribut \textit{isRead}. Metoden
+\textit{parse(org.jdom.Document)} returnerar en instans av
+\textit{RssFeed}, se sektion \ref{RssFeed}.
+
+Källkod finns i bilaga \ref{JeedConfigParser.java}.
+
+\subsection{JeedConfigWriter.java}\label{JeedConfigWriter}
+Klassen \textit{JeedConfigWriter} använder sig av klassen
+\textit{FeedOutputter}, för att spara en eller flera flöden som en
+filer i katalogen som definieras av konstanten \textit{CONF\_DIR} i
+klassen \textit{JeedReader}. Filnamnen som sparas bestäms av flödenas
+\textit{URL}, och kommer därför alltid att bli unika för varje flöde.
+
+Källkod finns i bilaga \ref{JeedConfigWriter.java}.
+
+\subsection{JeedModel.java}\label{JeedModel}
+Klassen \textit{JeedModel} är en representation av programmets
+data. Här sparas alla flöden och metoder för att hämta, lägga till och
+ta bort flöden är implementerade. Klassen utökar
+\textit{java.util.Observable} och meddelar alla klasser som
+registrerat sig som intressenter för denna klass när ändringar i
+\textit{JeedModel}.
+% TODO ändringar per flöde, skicka med flödet som argument
+
+Källkod finns i bilaga \ref{JeedModel.java}.
+
+\subsection{JeedReader.java}\label{JeedReader}
+Klassen \textit{JeedReader} är programmets huvudklass, med denna klass
+startas programmet. I \textit{Model-View-Controller}-modellen så
+motsvarar denna klass \textit{Controller}, det vill säga klassen
+ansvarar för att bygga upp programmet och hantera användares
+handlingar.
+
+\textit{JeedReader}s konstruktor skapar en \textit{JeedModel} och
+skickar med denna instans till konstruktorn i \textit{JeedView}.
+
+Flöden för alla filer, som fås av metoden
+\textit{FeedUtil.getFeedFiles()}, se sektion \ref{getFeedFiles()},
+skapas och läggs till i instansen av \textit{JeedModel}.
+
+Inre klasser som implementerar olika typer av \textit{EventListener}s
+deklareras och fästs vid olika komponenter i \textit{JeedView} genom
+''set''-metoder i \textit{JeedView}.
+
+Källkod finns i bilaga \ref{JeedReader.java}.
+
+\subsection{JeedView.java}\label{JeedView}
+Källkod finns i bilaga \ref{JeedView.java}.
+\subsection{RssFeed.java}\label{RssFeed}
+Källkod finns i bilaga \ref{RssFeed.java}.
+\subsection{RssItem.java}\label{RssItem}
+Källkod finns i bilaga \ref{RssItem.java}.
+\subsection{RssParser.java}\label{RssParser}
+Källkod finns i bilaga \ref{RssParser.java}.
+\subsection{config}
+
+\section{Begränsningar}\label{Begransningar}
+% Vilka problem och begränsningar har din lösning av uppgiften? Hur
+% skulle de kunna rättas till?
+
+\section{Reflektioner}\label{Reflektioner}
+% Var det något som var speciellt krångligt? Vilka problem uppstod och
+% hur löste ni dem? Allmänna synpunkter. Hur skulle man kunna använda
+% dessa metoder i andra mer omfattande system?
+
+\section{Testkörningar}\label{Testkorningar}
+% Noggranna testkörningar där man ser att programmet fungerar som det
+% ska.
+
+\section{Diskussion}\label{Diskussion}
+% Hur fungerade det att följa en kodkonvention? Vilka var fördelarna
+% respektive nackdelarna?
+
+
+\newpage
+\appendix
+\pagenumbering{arabic}
+\section{Källkod}\label{Kallkod}
+% Källkoden ska finnas tillgänglig i er hemkatalog
+% ~/edu/apjava/lab1/. Bifoga även utskriven källkod.
+Härefter följer utskrifter från källkoden till denna laboration.
+
+\subsection{Feed.java}\label{Feed.java}
+\begin{footnotesize}
+  \verbatiminput{../src/Feed.java}
+\end{footnotesize}
+
+\newpage
+\subsection{FeedItem.java}\label{FeedItem.java}
+\begin{footnotesize}
+  \verbatiminput{../src/FeedItem.java}
+\end{footnotesize}
+
+\newpage
+\subsection{FeedOutputter.java}\label{FeedOutputter.java}
+\begin{footnotesize}
+  \verbatiminput{../src/FeedOutputter.java}
+\end{footnotesize}
+
+\newpage
+\subsection{FeedParser.java}\label{FeedParser.java}
+\begin{footnotesize}
+  \verbatiminput{../src/FeedParser.java}
+\end{footnotesize}
+
+\newpage
+\subsection{FeedUtil.java}\label{FeedUtil.java}
+\begin{footnotesize}
+  \verbatiminput{../src/FeedUtil.java}
+\end{footnotesize}
+
+\newpage
+\subsection{JeedConfigParser.java}\label{JeedConfigParser.java}
+\begin{footnotesize}
+  \verbatiminput{../src/JeedConfigParser.java}
+\end{footnotesize}
+
+\newpage
+\subsection{JeedConfigWriter.java}\label{JeedConfigWriter.java}
+\begin{footnotesize}
+  \verbatiminput{../src/JeedConfigWriter.java}
+\end{footnotesize}
+
+\newpage
+\subsection{JeedModel.java}\label{JeedModel.java}
+\begin{footnotesize}
+  \verbatiminput{../src/JeedModel.java}
+\end{footnotesize}
+
+\newpage
+\subsection{JeedReader.java}\label{JeedReader.java}
+\begin{footnotesize}
+  \verbatiminput{../src/JeedReader.java}
+\end{footnotesize}
+
+\newpage
+\subsection{JeedView.java}\label{JeedView.java}
+\begin{footnotesize}
+  \verbatiminput{../src/JeedView.java}
+\end{footnotesize}
+
+\newpage
+\subsection{RssFeed.java}\label{RssFeed.java}
+\begin{footnotesize}
+  \verbatiminput{../src/RssFeed.java}
+\end{footnotesize}
+
+\newpage
+\subsection{RssItem.java}\label{RssItem.java}
+\begin{footnotesize}
+  \verbatiminput{../src/RssItem.java}
+\end{footnotesize}
+
+\newpage
+\subsection{RssParser.java}\label{RssParser.java}
+\begin{footnotesize}
+  \verbatiminput{../src/RssParser.java}
+\end{footnotesize}
+  
+\end{document}

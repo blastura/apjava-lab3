@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="highscoreservice" default="dist" basedir=".">
+    <description>
+    highscoreservice.aar
+  </description>
+    <!-- global properties -->
+    <property name="src" location="src"/>
+    <property name="wsdl" location="wsdl"/>
+    <property name="lib" location="lib"/>
+    <!-- Axis2 library classpath -->
+    <property name="axislib" location="../apache-tomcat-6.0.16/webapps/axis2/WEB-INF/lib"/>
+    <property name="build" location="build"/>
+    <property name="dist" location="dist"/>
+    <property name="serviceaar" location="${dist}/highscoreservice.aar"/>
+    <property name="apijar" location="${dist}/highscoreservice-api.jar"/>
+    <path id="lib.classpath">
+        <fileset dir="${axislib}">
+            <include name="**/*.jar"/>
+        </fileset>
+        <fileset dir="${lib}">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+    <target name="init">
+        <tstamp/>
+        <mkdir dir="${build}"/>
+    </target>
+    <target name="genstubs" depends="init" description="generate service stubs">
+        <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
+            <classpath refid="lib.classpath"/>
+            <arg value="-uri"/>
+            <arg file="${wsdl}/highscoreservice.wsdl"/>
+            <arg value="-ss"/>
+            <arg value="-sd"/>
+            <arg value="-s"/>
+            <arg value="-p"/>
+            <arg value="se.umu.cs.edu.jap.highscoreservice.stubs"/>
+            <arg value="-d"/>
+            <arg value="none"/>
+        </java>
+    </target>
+    <target name="compile" depends="genstubs" description="compile source">
+        <javac debug="true" srcdir="${src}" destdir="${build}">
+            <classpath refid="lib.classpath"/>
+        </javac>
+    </target>
+    <target name="dist" depends="compile" description="generate distribution">
+        <mkdir dir="${dist}"/>
+        <!-- service AAR -->
+        <copy todir="${build}/META-INF">
+            <fileset dir="resources">
+                <include name="services.xml"/>
+            </fileset>
+            <fileset dir="${wsdl}">
+                <include name="highscoreservice.wsdl"/>
+            </fileset>
+        </copy>
+        <jar jarfile="${serviceaar}" basedir="${build}"/>
+        <!-- api JAR -->
+        <delete>
+            <!-- remove service implementation classes -->
+            <fileset dir="${build}" includes="**/*services.xml"/>
+            <fileset dir="${build}" includes="**/*InOut.class"/>
+            <fileset dir="${build}" includes="**/*Skeleton.class"/>
+        </delete>
+        <jar jarfile="${apijar}" basedir="${build}"/>
+        <!-- cleanup -->
+        <delete dir="${build}"/>
+    </target>
+    <target name="clean" description="clean up">
+        <!-- Delete the ${build} and ${dist} directory trees -->
+        <delete dir="${build}"/>
+        <delete file="${serviceaar}"/>
+        <delete file="${apijar}"/>
+        <delete>
+            <fileset dir="." includes="**/*.tmp"/>
+        </delete>
+    </target>
+    <target name="print-classpath" description="Prints classpath, convenient for export to emacs and jde-mode">
+        <property name="classpath" refid="lib.classpath"/>
+        <echo message="-classpath-${classpath}-classpath-"/>
+    </target>
+</project>
