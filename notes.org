@@ -1,0 +1,52 @@
+<!--
+    * Frågor
+    ** Kan en simpleType ha text inuti sig? Den kan inte ha barn väl?
+-->
+
+<anton>
+
+  <wsdl:portType name="HighScoreService">
+    <wsdl:operation name="store">
+      <wsdl:input message="tns:StoreRequestMessage"/>
+      <wsdl:output message="tns:StoreResponseMessage"/>
+      <wsdl:fault message="tns:FailureFaultException" name="FailureFault"/>
+    </wsdl:operation>
+    <wsdl:operation name="retrieve">
+      <wsdl:input message="tns:RetrieveRequestMessage"/>
+      <wsdl:output message="tns:RetrieveResponseMessage"/>
+      <wsdl:fault message="tns:FailureFaultException" name="FailureFault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+    
+  <!-- EntryType *******************-->
+  <name></name>
+  <date></date>
+  <score></score>
+
+  <StoreRequest>
+    <score>
+      <name></name>
+      <date></date>
+      <score></score>
+    </score>
+    <!-- more scores -->
+  </StoreRequest>
+  
+  <StoreResponse>
+    <!-- StoreResponseType, no restirctions -->
+  </StoreResponse>
+  
+  <RetrieveRequest>
+    <!-- RetrieveRequestType, no restirctions -->
+  </RetrieveRequest>
+  
+  <!-- ***********************************-->
+  <RetrieveResponse>
+    <score>
+      <name></name>
+      <date></date>
+      <score></score>
+      </score>
+  </RetrieveResponse>
+  
+</anton>
