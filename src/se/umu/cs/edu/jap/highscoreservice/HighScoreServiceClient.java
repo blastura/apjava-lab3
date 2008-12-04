@@ -125,12 +125,14 @@ public class HighScoreServiceClient {
             // <xsd:element name="StoreResponse" type="tns:StoreResponseType"/>
             // StoreResponseType = <xsd:simpleType name="StoreResponseType"/>
             ArrayList<String> resultList = new ArrayList<String>();
-            Iterator<OMElement> elementIterator = response.getChildElements();
+            @SuppressWarnings("unchecked") // Doesn't support generics
+                Iterator<OMElement> elementIterator = response.getChildElements();
             // TODO
             while (elementIterator.hasNext()) {
                 logger.info("response element has child elements!");
                 OMElement ge = elementIterator.next();
-                Iterator<OMElement> it = ge.getChildElements();
+                @SuppressWarnings("unchecked") // Doesn't support generics
+                    Iterator<OMElement> it = ge.getChildElements();
                 String responseText = it.next().getText();
                 resultList.add(responseText);
             }
@@ -156,10 +158,13 @@ public class HighScoreServiceClient {
     public Entry[] parseRespons(OMElement response) {
         // parse and echo response
         ArrayList<Entry> entryList = new ArrayList<Entry>();
-        Iterator<OMElement> elementIterator = response.getChildElements();
+        
+        @SuppressWarnings("unchecked") // Doesn't support generics
+            Iterator<OMElement> elementIterator = response.getChildElements();
         while (elementIterator.hasNext()) {
             OMElement ge = elementIterator.next();
-            Iterator<OMElement> it = ge.getChildElements();
+            @SuppressWarnings("unchecked") // Doesn't support generics
+                Iterator<OMElement> it = ge.getChildElements();
             String name = it.next().getText();
             String date = it.next().getText();
             String score = it.next().getText();
