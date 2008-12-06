@@ -16,8 +16,8 @@ public class StoreClient {
     private static Logger logger = Logger.getLogger("highscoreservice");
     
     private static final String DEFAULT_URL =
-        "http://nemi.cs.umu.se:8080/axis2/services/HighScoreService";
-    //"http://localhost:8080/axis2/services/HighScoreService";
+        //"http://nemi.cs.umu.se:8080/axis2/services/HighScoreService";
+        "http://localhost:8081/axis2/services/HighScoreService";
 
     private static String getProperty(String name) {
         String value = System.getProperty(name);

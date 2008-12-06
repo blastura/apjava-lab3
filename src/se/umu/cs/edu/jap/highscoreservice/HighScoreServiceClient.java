@@ -13,6 +13,7 @@ import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import se.umu.cs.edu.jap.highscoreservice.stubs.FailureFaultException;
+import se.umu.cs.edu.jap.highscoreservice.util.XMLUtil;
 import java.util.logging.Logger;
 import java.io.StringWriter;
 import javax.xml.stream.XMLOutputFactory;
@@ -23,8 +24,9 @@ public class HighScoreServiceClient {
     
     // Namespace Service
     private static final String SERVICE =
-        //"http://localhost:8080/axis2/services/HighScoreService";
         "http://nemi.cs.umu.se:8080/axis2/services/HighScoreService";
+    
+    // URL for connection to service
     private final URL url;
     
     public HighScoreServiceClient(URL url) {
@@ -184,41 +186,13 @@ public class HighScoreServiceClient {
             
             // Return result Response is one or more elements "RetrieveResponse"
             // with an element "score" of type "EntryType""
-            return parseScores(response);
+            return XMLUtil.parseScores(response);
         } catch (AxisFault e) {
             //TODO - fix error message
             e.printStackTrace();
         }
         // Something went wrong.
         return new Entry[] {};
-    }
-    
-    /**
-     * Parse response Element (<xsd:element name="RetrieveResponse"
-     * type="tns:RetrieveResponseType"/>), create and return an Entry made from
-     * the respone.
-     * TODO: doc and maybe rename method and parameter.
-     * @param responseElement 
-     * @return 
-     */
-    public Entry[] parseScores(OMElement scores) {
-        // parse and echo response
-        ArrayList<Entry> entryList = new ArrayList<Entry>();
-        
-        @SuppressWarnings("unchecked") // Doesn't support generics
-            Iterator<OMElement> elementIterator = scores.getChildElements();
-        while (elementIterator.hasNext()) {
-            OMElement ge = elementIterator.next();
-            @SuppressWarnings("unchecked") // Doesn't support generics
-                Iterator<OMElement> it = ge.getChildElements();
-            String name = it.next().getText();
-            String date = it.next().getText();
-            String score = it.next().getText();
-            entryList.add(new Entry(name, date, score));
-        }
-        Entry[] result = new Entry[entryList.size()];
-        entryList.toArray(result);
-        return result;
     }
     
     /**
