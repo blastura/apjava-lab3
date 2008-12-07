@@ -1,3 +1,10 @@
+/*
+ * @(#)HighScoreServiceSkeleton.java
+ *
+ * Copied without any changes from:
+ * http://www.cs.umu.se/kurser/5DV085/HT08/code/assignment3_handout.zip
+ */
+
 package se.umu.cs.edu.jap.highscoreservice;
 
 public class Entry implements Comparable<Entry> {

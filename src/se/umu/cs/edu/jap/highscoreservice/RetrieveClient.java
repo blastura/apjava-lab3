@@ -1,19 +1,17 @@
+/*
+ * @(#)RetrieveClient.java
+ * Time-stamp: "2008-12-07 21:51:19 anton"
+ */
+
 package se.umu.cs.edu.jap.highscoreservice;
 
+import java.net.MalformedURLException;
 import java.net.URL;
-
-// import java.io.*;
-// import java.net.*;
-// import java.util.*;
-// import org.apache.axiom.om.*;
-// import org.apache.axis2.*;
-// import org.apache.axis2.addressing.*;
-// import org.apache.axis2.client.*;
 
 public class RetrieveClient {
     private static final String DEFAULT_URL =
-        "http://nemi.cs.umu.se:8080/axis2/services/HighScoreService";
-    //"http://localhost:8080/axis2/services/HighScoreService";
+        //"http://nemi.cs.umu.se:8080/axis2/services/HighScoreService";
+        "http://localhost:8081/axis2/services/HighScoreService";
 
     /**
      * TODO: Have not changed this one.
@@ -32,28 +30,28 @@ public class RetrieveClient {
      * @param args 
      */
     public static void main(String args[]) {
+        final String propertyURL = getProperty("service.url");
+        final String urlString = (propertyURL.length() > 0) ? propertyURL
+            : DEFAULT_URL;
+        
         try {
-            final String propertyURL = getProperty("service.url");
-            final String url = (propertyURL.length() > 0) ? propertyURL
-                : DEFAULT_URL;
+            URL url = new URL(urlString);
 
-            System.out.println("retrieving entries");
-
-            // TODO: implement service invocation
-            HighScoreServiceClient client =
-                new HighScoreServiceClient(new URL(url));
+            HighScoreServiceClient client = new HighScoreServiceClient(url);
             
+            System.out.println("Retrieving entries");
             Entry[] entries = client.retrieve();
 
-            System.out.println("retrieved " + entries.length + " entries");
+            System.out.println("Retrieved " + entries.length + " entries.");
             for (Entry entry : entries) {
                 System.out.println("Name:  " + entry.getName());
                 System.out.println("Date:  " + entry.getDate());
                 System.out.println("Score: " + entry.getScore());
                 System.out.println();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            System.err.println("Malformed url.");
+            System.exit(-1);
         }
     }
 }
