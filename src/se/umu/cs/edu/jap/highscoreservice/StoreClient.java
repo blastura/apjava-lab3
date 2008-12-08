@@ -1,6 +1,6 @@
 /*
  * @(#)StoreClient.java
- * Time-stamp: "2008-12-07 23:27:14 anton"
+ * Time-stamp: "2008-12-08 12:23:25 anton"
  */
 
 package se.umu.cs.edu.jap.highscoreservice;
@@ -53,8 +53,10 @@ public class StoreClient {
 
             HighScoreServiceClient client =
                 new HighScoreServiceClient(url);
-            String[] response = client.store(entries);
-            System.out.println("Response text: " + response);
+            String[] responses = client.store(entries);
+            for (String response : responses) {
+                System.out.println("Response text: " + response);
+            }
         } catch (MalformedURLException e) {
             System.err.println("Malformed url");
             System.exit(-1);

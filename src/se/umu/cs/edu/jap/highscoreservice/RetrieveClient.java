@@ -1,12 +1,13 @@
 /*
  * @(#)RetrieveClient.java
- * Time-stamp: "2008-12-07 21:51:19 anton"
+ * Time-stamp: "2008-12-08 12:17:27 anton"
  */
 
 package se.umu.cs.edu.jap.highscoreservice;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import se.umu.cs.edu.jap.highscoreservice.stubs.FailureFaultException;
 
 public class RetrieveClient {
     private static final String DEFAULT_URL =
@@ -51,6 +52,9 @@ public class RetrieveClient {
             }
         } catch (MalformedURLException e) {
             System.err.println("Malformed url.");
+            System.exit(-1);
+        } catch (FailureFaultException e) {
+            e.printStackTrace();            
             System.exit(-1);
         }
     }

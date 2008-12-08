@@ -1,6 +1,6 @@
 /*
  * @(#)XMLUtil.java
- * Time-stamp: "2008-12-07 23:23:04 anton"
+ * Time-stamp: "2008-12-08 11:23:01 anton"
  */
 
 package se.umu.cs.edu.jap.highscoreservice.util;
@@ -43,6 +43,7 @@ public final class XMLUtil {
             OMElement ge = elementIterator.next();
             @SuppressWarnings("unchecked") // Doesn't support generics
                 Iterator<OMElement> it = ge.getChildElements();
+            // Validate to make sure elements are in correct order
             String name = it.next().getText();
             String date = it.next().getText();
             String score = it.next().getText();

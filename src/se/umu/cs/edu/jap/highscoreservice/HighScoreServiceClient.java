@@ -1,6 +1,6 @@
 /*
  * @(#)HighScoreServiceClient.java
- * Time-stamp: "2008-12-07 23:14:40 anton"
+ * Time-stamp: "2008-12-08 12:12:51 anton"
  */
 
 package se.umu.cs.edu.jap.highscoreservice;
@@ -114,11 +114,8 @@ public class HighScoreServiceClient {
             resultList.toArray(result);
             return result;
         } catch (AxisFault e) {
-            // TODO - fix error message
-            e.printStackTrace();
+            throw new FailureFaultException("Exception from service: ", e);
         }
-        // TODO: If this happend something went wrong?
-        return new String[] {"Something went wrong?"};
     }
 
 
@@ -127,7 +124,7 @@ public class HighScoreServiceClient {
      *
      * @return All entries from the service.
      */
-    public Entry[] retrieve() {
+    public Entry[] retrieve() throws FailureFaultException {
         final String method = "retrieve";
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMNamespace namespace = factory.createOMNamespace(SERVICE, method);
@@ -159,10 +156,9 @@ public class HighScoreServiceClient {
             return XMLUtil.parseScores(response);
         } catch (AxisFault e) {
             //TODO - fix error message
-            e.printStackTrace();
+            // throw new java.rmi.RemoteException("operation", e);
+            throw new FailureFaultException("Exception from service: ", e);
         }
-        // Something went wrong.
-        return new Entry[] {};
     }
 
     /**

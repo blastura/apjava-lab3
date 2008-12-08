@@ -1,6 +1,6 @@
 /*
  * @(#)HighScoreServiceData.java
- * Time-stamp: "2008-12-07 23:25:28 anton"
+ * Time-stamp: "2008-12-08 11:53:48 anton"
  */
 
 package se.umu.cs.edu.jap.highscoreservice.stubs;
@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import se.umu.cs.edu.jap.highscoreservice.Entry;
-
 
 /**
  * HighScoreServiceData is used to store and manage entires from
@@ -22,7 +21,7 @@ import se.umu.cs.edu.jap.highscoreservice.Entry;
 public class HighScoreServiceData { 
     private static Logger logger = Logger.getLogger("highscoreservice");
     
-    private static HighScoreServiceData instance = new HighScoreServiceData();
+    private static final HighScoreServiceData INSTANCE = new HighScoreServiceData();
     private List<Entry> entries;
     
     /**
@@ -37,7 +36,7 @@ public class HighScoreServiceData {
     }
 
     public static HighScoreServiceData getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     public Entry[] getEntries() {
