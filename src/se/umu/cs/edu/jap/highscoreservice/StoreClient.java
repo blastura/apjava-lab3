@@ -1,30 +1,45 @@
 /*
  * @(#)StoreClient.java
- * Time-stamp: "2008-12-09 13:28:31 anton"
+ * Time-stamp: "2008-12-09 23:44:42 anton"
  */
 
 package se.umu.cs.edu.jap.highscoreservice;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import se.umu.cs.edu.jap.highscoreservice.stubs.FailureFaultException;
 
+/**
+ * StoreClient simplifies requests to store entries in a HighScoreService.
+ *
+ * @author Anton Johansson, dit06ajn@cs.umu.se
+ * @version 1.0
+ */
 public class StoreClient {
 
     private static final String DEFAULT_URL =
-        //"http://nemi.cs.umu.se:8080/axis2/services/HighScoreService";
-        "http://localhost:8081/axis2/services/HighScoreService";
+        "http://localhost:8080/axis2/services/HighScoreService";
 
+    /**
+     * Copied from HelloWorldService. Gets a System property.
+     *
+     * @param name The property to get.
+     * @return The value stored in the property or an empty string if null is
+     * stored.
+     */
     private static String getProperty(String name) {
         String value = System.getProperty(name);
         return (value != null) ? value : "";
     }
 
+    /**
+     * Runs the program, sets up a request and tries to store all entries
+     * supplied as parameters when calling this class from a terminal.
+     *
+     * @param args Is used to create new entries. Every 3 parameters represent
+     * an Entry as name, date, score.
+     */
     public static void main(String args[]) {
-        Logger.getLogger("highscoreservice").setLevel(Level.ALL);
-
         final String propertyURL = getProperty("service.url");
         final String urlString = (propertyURL.length() > 0) ? propertyURL
             : DEFAULT_URL;
@@ -61,7 +76,8 @@ public class StoreClient {
             System.err.println("Malformed url");
             System.exit(-1);
         } catch (FailureFaultException e) {
-            e.printStackTrace();
+            System.err.println("Error trying to communicate with Service: "
+                               + e.getMessage());
             System.exit(-1);
         }
     }

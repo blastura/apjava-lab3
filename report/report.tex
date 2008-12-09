@@ -18,7 +18,7 @@
 \floatname{xml}{XML}
 
 % vars
-\def\title{Webb-tjänster}
+\def\title{Webbtjänster}
 \def\preTitle{Laboration 3}
 \def\kurs{Applikationsprogrammering i Java, HT-08}
 
@@ -89,7 +89,7 @@
 \section{Problemspecifikation}\label{Problemspecifikation}
 % Beskriv med egna ord vad uppgiften gick ut på. Är det någonting som
 % varit oklart och ni gjort egna tolkningar så beskriv dessa.
-Laborationen gick ut på att implementera en webb-tjänst för att skicka
+Laborationen gick ut på att implementera en webbtjänst för att skicka
 och ta emot information över nätet, så kallad
 interprocesskommunikation, från engelskans \textit{inter-process
   communication}, förkortat \textit{IPC}. Givet var en XML-fil, där
@@ -99,15 +99,15 @@ vara utformade när de skickas och hur svaren kommer att se
 ut. Kommunikationen är även den XML-baserad och sköts via protokollet
 HTTP.
 
-Webb-tjänsten skulle ha funktionalitet som hanterar att från ett anrop
-spara en poäng-registrering, bestående av namn, datum och
+Webbtjänsten skulle ha funktionalitet som hanterar att från ett anrop
+spara en poängregistrering, bestående av namn, datum och
 poäng. Tjänsten ska även via anrop kunna returnera alla
-poäng-registreringar som är sparade. Till detta skulle även en klient
+poängregistreringar som är sparade. Till detta skulle även en klient
 implementeras. Klienten skulle kunna skicka meddelande för att spara
 och hämta poäng till och från tjänsten.
 
 För denna implementering var det givet en utvecklingsmiljö bestående
-av en webb-server och ett påbörjat projekt där vissa klasser var
+av en webbserver och ett påbörjat projekt där vissa klasser var
 givna/genererade. Utvecklingsmiljön finns på sidan:\\
 \begin{footnotesize}
 \verb!http://www.cs.umu.se/kurser/5DV085/HT08/assignments/environment/!
@@ -169,13 +169,13 @@ har taggarna i \textit{build.xml} relativt självförklarande namn, de
 motsvarar i många fall direkta kommandon som går att köra i en
 terminal.
 
-För att starta webb-servern och sätta igång webb-tjänsten körs skripten:\\
+För att starta webb-servern och sätta igång webbtjänsten körs skripten:\\
 \begin{footnotesize}
 \verb!salt:~/edu/apjava/lab3> ./deploy-linux.sh !\\
 \verb!salt:~/edu/apjava/lab3> ./start-linux.sh !
 \end{footnotesize}
 
-När detta är gjort finns webb-tjänsten redo att användas lokalt via:\\
+När detta är gjort finns webbtjänsten redo att användas lokalt via:\\
 \begin{footnotesize}
 \verb!http://localhost:8080/axis2/services/HighScoreService!
 \end{footnotesize}
@@ -187,7 +187,7 @@ skriptet\linebreak \texttt{store-linux.sh} som i sin tur anropar den
 implementerade Java-klienten \textit{StoreClient}, se källkod bilaga
 \ref{StoreClient.java}. Till detta skript skickas parametrar med som
 anger \textit{namn}, \textit{datum} och \textit{poäng}. För att skicka
-in flera poäng-registreringar till tjänsten samtidigt kan flera
+in flera poängregistreringar till tjänsten samtidigt kan flera
 parametrar på rad tas emot. Exempel:
 
 \begin{footnotesize}
@@ -203,7 +203,7 @@ skript.
 
 \subsection{Hämta poäng}
 
-För att hämta poäng som finns sparade i webb-tjänsten körs lättast
+För att hämta poäng som finns sparade i webbtjänsten körs lättast
 skriptet \texttt{retrieve-linux.sh} som anropar Java-klienten
 \textit{RetrieveClient}, se källkod i
 bilaga~\ref{RetrieveClient.java}. Exempel:
@@ -213,7 +213,7 @@ bilaga~\ref{RetrieveClient.java}. Exempel:
 \end{footnotesize}
 
 Utöver eventuell debug-utskrift listas från kommandot ovan ut alla
-poäng-registreringar som finns sparade i tjänsten:
+poängregistreringar som finns sparade i tjänsten:
 
 \begin{footnotesize}
 \begin{verbatim}
@@ -229,7 +229,7 @@ Score: 123
 \end{footnotesize}
 
 \subsection{Inställningar}
-För att ändra adressen till webb-tjänsten som klienterna,
+För att ändra adressen till webbtjänsten som klienterna,
 \textit{StoreClient} och \textit{RetrieveClient}, ska anropa sätts en
 \textit{System property}, \verb!service.url! till önskad URL.
 
@@ -261,12 +261,12 @@ varandra är att de använder sig av samma specifikation för meddelanden
 som skickas och tas emot, se avsnitt~\ref{sec:highscoreservice.wsdl}.
 
 Nedan avsnitt går igenom systemets olika klasser, även andra klasser
-är aktiva i webb-tjänsten, dessa är dock genererade utifrån
+är aktiva i webbtjänsten, dessa är dock genererade utifrån
 \textit{WSDL}-filen och kommer inte att beskrivas i denna rapport.
 
 \subsection{Entry}
 Klassen \textit{Entry} fanns bifogad i utvecklingsmiljön. Klassen
-representerar en poängregistrering i webb-tjänsten, namn, datum och
+representerar en poängregistrering i webbtjänsten, namn, datum och
 poäng kan sparas undan och hämtas ut.
 
 Källkod finns i bilaga~\ref{Entry.java}.
@@ -284,15 +284,15 @@ Källkod finns i bilaga~\ref{XMLUtil.java}.
 \subsection{HighScoreServiceClient}
 Klassen \textit{HighScoreServiceClient} implementerar två metoder
 \textit{store} och \textit{retrive}. Klassens konstruktor tar emot en
-URL som anger adressen webb-tjänsten som ska användas.
+URL som anger adressen webbtjänsten som ska användas.
 
 Metoden \textit{store} tar emot en vektor med instanser av klassen
 \textit{Entry}, formaterar dessa till ett XML-element av typen
 \textit{StoreRequestType}, enligt WSDL-fil, och skickar dessa till den
-aktuella webb-tjänsten.
+aktuella webbtjänsten.
 
-Metoden \textit{retrieve} hämtar alla poäng-registreringar sparade i
-den aktuella webb-tjänsten och returnerar dessa i en vektor
+Metoden \textit{retrieve} hämtar alla poängregistreringar sparade i
+den aktuella webbtjänsten och returnerar dessa i en vektor
 innehållandes instanser av klassen \textit{Entry}.
 
 Källkod finns i bilaga~\ref{HighScoreServiceClient.java}.
@@ -310,7 +310,7 @@ http://localhost:8080/axis2/services/HighScoreService
 \end{verbatim}
 \end{footnotesize}
 
-Finns det poäng-registreringar sparade i tjänsten skrivs dessa ut till
+Finns det poängregistreringar sparade i tjänsten skrivs dessa ut till
 \textit{standard output}, det vill säga terminalen
 \textit{RetrieveClient} anropades från.
 
@@ -333,28 +333,28 @@ Vid anrop av \textit{StoreClient} läses eventuella parametrar av och
 läggs gruppvis, om tre, in som namn, datum och poäng i nya instanser av
 klassen \textit{Entry}. Dessa skickas sedan med till metoden
 \textit{store} i klassen \textit{HighScoreServiceClient}. Dessa
-poäng-registreringar ska sparas i webb-tjänsten.
+poängregistreringar ska sparas i webbtjänsten.
 
 Källkod finns i bilaga~\ref{StoreClient.java}.
 
 \subsection{HighScoreServiceData}
 Klassen \textit{HighScoreServiceData} sparar undan all information i
-webb-tjänsten. Eftersom varje anrop till webbtjänsten genererar en ny
+webbtjänsten. Eftersom varje anrop till webbtjänsten genererar en ny
 instans av klassen \textit{HighScoreServiceSkeleton} används
 \textit{HighScoreServiceData} som en \textit{Singleton}, se boken
 \textit{Design Patterns}~\cite{gamma}. Detta innebär att så länge
-webb-tjänsten är igång kommer en och enbart en instans att existera av
+webbtjänsten är igång kommer en och enbart en instans att existera av
 denna klass. En statisk metod för att hämta denna instans finns
 implementerad, utöver det finns metoder för att spara undan och hämta
-poäng-registreringar av typen \textit{Entry}.
+poängregistreringar av typen \textit{Entry}.
 
 Källkod finns i bilaga~\ref{HighScoreServiceData.java}.
 
 \subsection{HighScoreServiceSkeleton}
 Klassen \textit{HighScoreServiceSkeleton} hanterar slutändan av de
-faktiska till webb-tjänsten. Klassens metoder \textit{store} och
+faktiska till webbtjänsten. Klassens metoder \textit{store} och
 \textit{retrieve} sköter logiken för de två olika anropen till
-webb-tjänsten.
+webbtjänsten.
 
 Metoden \textit{store} tar emot ett XML-element som kan innehålla ett
 eller flera \textit{score}-element av typen \textit{EntryType}. Dessa
@@ -362,7 +362,7 @@ tolkas av klassen \textit{XMLUtil} och sparas undan som instanser av
 typen \textit{Entry} i klassen \textit{HighScoreServiceData}. Ett tomt
 XML-element av typen \textit{StoreResponse} returneras.
 
-Metoden \textit{retrieve} hämtar ut alla poäng-registreringar ur
+Metoden \textit{retrieve} hämtar ut alla poängregistreringar ur
 instansen av \textit{HighScoreServiceData} lägger in dem i ett
 XML-element med hjälp av en metod i klassen \textit{XMLUtil}. Detta
 element returneras från metoden.
@@ -371,7 +371,7 @@ Källkod finns i bilaga~\ref{HighScoreServiceSkeleton.java}.
 
 \subsection{Filen highscoreservice.wsdl}\label{sec:highscoreservice.wsdl}
 Filen \textit{highscoreservice.wsdl} är definitionen av själva
-webb-tjänsten. Här beskrivs de metoder och meddelanden som tjänsten
+webbtjänsten. Här beskrivs de metoder och meddelanden som tjänsten
 arbetar med. Två metoder \textit{store} och \textit{retrieve} finns
 beskrivna, dess indata och utdata är specificerade i ett
 XML-schema.
@@ -432,7 +432,7 @@ blir detta en ändring av laborationsspecifikationen vilket innebär att
 det kanske borde ses som en annan lösning och inte som en begränsning.
 
 Tjänsten som är implementerad sparar inte undan informationen om
-poäng-registreringar till disk eller till någon typ av databas. Detta
+poängregistreringar till disk eller till någon typ av databas. Detta
 medför att varje gång servern startas om så kommer all information att
 gå förlorad. En lösning till detta är att spara ner informationen till
 antingen XML-filer/fil eller att använda en databas.
@@ -465,7 +465,7 @@ som har Internetuppkoppling.
 % Noggranna testkörningar där man ser att programmet fungerar som det
 % ska.
 Följande avsnitt beskriver några olika scenarion vid användande av
-webb-tjänsten. Alla kommandon som följer förutsätter att en webbserver
+webbtjänsten. Alla kommandon som följer förutsätter att en webbserver
 är igång på adress:
 \begin{footnotesize}
 \verb!http://localhost:8080/axis2/services/HighScoreService!
@@ -476,11 +476,11 @@ inte är ändrat.
 
 Programmet \textit{Apache
   TCPMon}\footnote{http://ws.apache.org/commons/tcpmon/} är använt för
-att fånga anrop till och från webb-servern.
+att ''tjuvlyssna'' på anrop till och från webb-servern.
 
 \subsection{Spara poäng}\label{sec:spara}
 
-För att spara en poäng-registrering körs:
+För att spara en poängregistrering körs:
 
 \begin{footnotesize}
 \verb!salt:~/edu/apjava/lab3> ./store-linux.sh anton idag 101!
@@ -503,7 +503,7 @@ XML~\ref{xml:store1}.
 </store:StoreRequest>
 \end{verbatim}
   \end{footnotesize}
-  \caption{StoreRequest, en poäng-registrering}\label{xml:store1}
+  \caption{StoreRequest, en poängregistrering}\label{xml:store1}
 \end{xml}
 
 Webbservern loggar meddelanden från tjänsten i filen:
@@ -526,7 +526,7 @@ anropet i XML~\ref{xml:store1}:
 \end{verbatim}
 \end{footnotesize}
 
-För att spara två poäng-registreringar samtidigt körs: 
+För att spara två poängregistreringar samtidigt körs: 
 
 \begin{footnotesize}
 \verb!salt:~/edu/apjava/lab3> ./store-linux.sh Pelle tors 12 Lena fre 142!
@@ -570,7 +570,7 @@ XML~\ref{xml:storeresponse}.
 </store:StoreRequest>
 \end{verbatim}
   \end{footnotesize}
-  \caption{StoreRequest, två poäng-registreringar samtidigt}\label{xml:store2}
+  \caption{StoreRequest, två poängregistreringar samtidigt}\label{xml:store2}
 \end{xml}
 
 \begin{xml}
@@ -584,8 +584,8 @@ XML~\ref{xml:storeresponse}.
 \end{xml}
 
 \subsection{Hämta poäng}
-Efter poäng-registreringarna i sektion \ref{sec:spara} är gjorda
-kommer webb-tjänsten att innehålla tre poster. Dessa kan hämtas med
+Efter poängregistreringarna i sektion \ref{sec:spara} är gjorda
+kommer webbtjänsten att innehålla tre poster. Dessa kan hämtas med
 kommandot:
 
 \begin{footnotesize}
@@ -613,7 +613,7 @@ Score: 142
 \end{footnotesize}
 
 Anropet som skickas till servern består av meddelandet i
-XML~\ref{xml:retrieverequest}. Det som fås tillbaka från webb-tjänsten
+XML~\ref{xml:retrieverequest}. Det som fås tillbaka från webbtjänsten
 visas i XML~\ref{xml:retrieveresponse}.
 
 \begin{xml}
@@ -662,10 +662,42 @@ visas i XML~\ref{xml:retrieveresponse}.
 % väldigt användbart. Kom även här ihåg att referera till era källor
 % (även om det är från föreläsningsmaterialet).
 
+Eftersom denna webbtjänst enbart använder sig av anrop innehållandes
+vanlig text kommer servern kunna användas från alla system som kan
+hantera text. Anropen sköts via protokollet HTTP, alltså räcker det
+med en webbläsare på klientsidan för att kunna använda tjänsten.
 
-\bibliographystyle{plain}
+Denna typ av tjänster kan vara väldigt användbara för möjligheten att
+erbjuda information till andra över hela jordklotet och oberoende av
+vilket system de använder sig av. Systemoberoendet gör att denna
+lösning lämpar sig väl i situationer där information finns som ska
+distribueras på framtidssäker sätt och där klienternas system kan
+förrändras.
+
+Nackdelen med att ha en text/xml-baserad kommunikation är att mycket
+av den faktiska datan som skickas över nätet kommer att innehålla
+meta-information om själva datan som skickas. Det är lätt att se i
+denna laboration där tre korta strängar skickas inbäddade i långa
+start- och slut-taggar. För mer mängd information som ska färdas långt
+över Internet kan detta sätt att skicka data sluka väldigt mycket
+bandbredd och därför också gå långsamt.
+
+Med så kallad \textit{lös koppling}, \textit{Loose Coupling} se pdf
+\cite{web:po}, erbjuds möjligheter för system att ha minimal kännedom
+om varandras interna implementationer. Webbtjänster hittas dynamiskt
+och kommunicerar initialt genom att skicka gränssnittsbeskrivingar,
+såsom \textit{WSDL}, mellan varandra. Möjligheten att på detta
+dynamiska sätt erbjuda en tjänst från flera distribuerade servar
+innebär att systemet blir väldigt skalbart och felsäkert. I ett
+exempel från föreläsning~\cite{lec:po} drogs en liknelse till hur
+telefonkatalogen fungerar, företag anmäler sina tjänster till ett
+register (telefonkatalogen) och klienter/personer letar i registret
+efter önskad tjänst (telefonnummer/IP-nummer) för att sedan sköta
+resten av kommunikationenen direkt med önskad tjänst. Denna typ av
+lösning kallas även \textit{Publish, Bind, Find}.
+
+\bibliographystyle{alpha}
 \bibliography{books.bib}
-
 
 \newpage
 \appendix
@@ -698,12 +730,6 @@ denna laboration.
 \subsection{StoreClient.java}\label{StoreClient.java}
 \begin{footnotesize}
   \verbatiminput{../src/se/umu/cs/edu/jap/highscoreservice/StoreClient.java}
-\end{footnotesize}
-
-\newpage
-\subsection{FailureFaultException.java}\label{FailureFaultException.java}
-\begin{footnotesize}
-  \verbatiminput{../src/se/umu/cs/edu/jap/highscoreservice/stubs/FailureFaultException.java}
 \end{footnotesize}
 
 \newpage

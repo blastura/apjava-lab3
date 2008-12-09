@@ -1,6 +1,6 @@
 /*
  * @(#)XMLUtil.java
- * Time-stamp: "2008-12-08 11:23:01 anton"
+ * Time-stamp: "2008-12-10 00:06:22 anton"
  */
 
 package se.umu.cs.edu.jap.highscoreservice.util;
@@ -26,12 +26,13 @@ public final class XMLUtil {
         "http://nemi.cs.umu.se:8080/axis2/services/HighScoreService";
     
     /**
-     * Parse response Element (<xsd:element name="RetrieveResponse"
-     * type="tns:RetrieveResponseType"/>), create and return an Entry made from
-     * the respone.
-     * TODO: doc and maybe rename method and parameter.
-     * @param responseElement 
-     * @return 
+     * Parse an OMElement containing one ore many score-elements of type
+     * EntryType. This is used for elements of type RetrieveResponseType and
+     * StoreRequestType.
+     *
+     * @param scores An element containing score elements of EntryType, like
+     * RetrieveResponseType and StoreRequestType.
+     * @return Entries created from the supplied element.
      */
     public static Entry[] parseScores(OMElement scores) {
         // parse and echo response
@@ -57,12 +58,12 @@ public final class XMLUtil {
 
     /**
      * Creates an OMElement with supplied root-element name, containing score
-     * entires of type EntryType.  TODO: doc
+     * entries of type EntryType.  TODO: doc
      *
-     * @param rootName The name of the root-element to store entires in.
+     * @param rootName The name of the root-element to store entries in.
      * @param method the name of the method used to create the OMElement. This
      * is used as namespace prefix.
-     * @param entries The entires to store in the OMElement
+     * @param entries The entries to store in the OMElement
      * @return An OMElement with root-element named from rootName, containing
      * score elements of type EntryType.
      */
@@ -92,13 +93,13 @@ public final class XMLUtil {
             String scoreText = entry.getScore();
             scoreElement.addChild(factory.createOMText(scoreText));
             
-            //Attatch name-, date-, scoreElement to scoreRootElement
+            //Attach name-, date-, scoreElement to scoreRootElement
             OMElement scoreRootElement = factory.createOMElement("score", namespace);
             scoreRootElement.addChild(nameElement);
             scoreRootElement.addChild(dateElement);
             scoreRootElement.addChild(scoreElement);
                         
-            // Attatch score to request
+            // Attach score to request
             resultElement.addChild(scoreRootElement);
         }
         return resultElement;

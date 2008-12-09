@@ -1,6 +1,6 @@
 /*
  * @(#)HighScoreServiceClient.java
- * Time-stamp: "2008-12-08 15:54:02 anton"
+ * Time-stamp: "2008-12-09 23:37:43 anton"
  */
 
 package se.umu.cs.edu.jap.highscoreservice;
@@ -21,10 +21,13 @@ import org.apache.axis2.client.ServiceClient;
 import se.umu.cs.edu.jap.highscoreservice.stubs.FailureFaultException;
 import se.umu.cs.edu.jap.highscoreservice.util.XMLUtil;
 
+/**
+ * HighScoreServiceClient has methods to communicate with the HighScoreService.
+ *
+ * @author Anton Johansson, dit06ajn
+ * @version 1.0
+ */
 public class HighScoreServiceClient {
-    // Logger
-    private static Logger logger = Logger.getLogger("highscoreservice");
-
     // Namespace Service
     private static final String SERVICE =
         "http://nemi.cs.umu.se:8080/axis2/services/HighScoreService";
@@ -32,6 +35,13 @@ public class HighScoreServiceClient {
     // URL for connection to service
     private final URL url;
 
+    /**
+     * Creates a new HighScoreServiceClient instance. Supplied URL gives the
+     * address to the HighScoreService to use.
+     *
+     * @param url The URL to the HighScoreService this class should communicate
+     * with.
+     */
     public HighScoreServiceClient(URL url) {
         this.url = url;
     }
@@ -39,9 +49,10 @@ public class HighScoreServiceClient {
     /**
      * Send a single "store" request.
      *
-     * @param entry an <code>Entry</code> value
-     * @return a <code>String</code> value
-     * @exception FailureFaultException if an error occurs
+     * @param entry The entry to send.
+     * @return The response.
+     * @exception FailureFaultException If an error communication with the
+     * service occurs.
      */
     public String store(Entry entry) throws FailureFaultException {
         String[] results = store(new Entry[] {entry});
@@ -49,30 +60,17 @@ public class HighScoreServiceClient {
     }
 
     /**
-     * Send Entry to Service
+     * Sends multiple entries of type Entry to the service.
      *
-     * <wsdl:operation name="store">
-     *   <wsdl:input message="tns:StoreRequestMessage"/>
-     *   <wsdl:output message="tns:StoreResponseMessage"/>
-     *  <wsdl:fault message="tns:FailureFaultException" name="FailureFault"/>
-     * </wsdl:operation>
-     *
-     * <StoreRequest>
-     *   <score>
-     *     <name></name>
-     *     <date></date>
-     *     <score></score>
-     *   </score>
-     * </StoreRequest>
-     *
-     * <StoreResponse>
-     *   <!-- StoreResponseType, no restirctions -->
-     * </StoreResponse>
+     * @param entries The entries to send.
+     * @return The responses.
+     * @exception FailureFaultException If an error communication with the
+     * service occurs.
      */
     public String[] store(Entry[] entries) throws FailureFaultException {
         final String method = "store";
 
-        // create a request
+        // Create a request
         OMElement request = XMLUtil.createScoreElements("StoreRequest", method, entries);
 
         // Print debug if system property "debug.messages" is set.
@@ -91,19 +89,16 @@ public class HighScoreServiceClient {
             // Could throw AxisFault
             OMElement response = client.sendReceive(request);
 
-            // test / debug
+            // Debug
             printDebug("RESPONSE", response);
 
-            // Return result
-            // TODO: How can several responses be stored?
+            // Return possible results from elements of type:
             // <xsd:element name="StoreResponse" type="tns:StoreResponseType"/>
             // StoreResponseType = <xsd:simpleType name="StoreResponseType"/>
             ArrayList<String> resultList = new ArrayList<String>();
             @SuppressWarnings("unchecked") // Doesn't support generics
                 Iterator<OMElement> elementIterator = response.getChildElements();
-            // TODO
             while (elementIterator.hasNext()) {
-                logger.info("response element has child elements!");
                 OMElement ge = elementIterator.next();
                 @SuppressWarnings("unchecked") // Doesn't support generics
                     Iterator<OMElement> it = ge.getChildElements();
@@ -120,23 +115,24 @@ public class HighScoreServiceClient {
 
 
     /**
-     * Retriev all entries from service.
+     * Retrieve all entries from service.
      *
-     * @return All entries from the service.
+     * @return All entries of type Entry from the service.
+     * @exception FailureFaultException If an error communication with the
+     * service occurs.
      */
     public Entry[] retrieve() throws FailureFaultException {
         final String method = "retrieve";
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMNamespace namespace = factory.createOMNamespace(SERVICE, method);
 
-        // create a request
+        // Create a request
         OMElement request
             = factory.createOMElement("RetrieveRequest", namespace);
 
         // Configure connection
         Options options = new Options();
         options.setTo(new EndpointReference(url.toString()));
-        // TODO: Make sure the right Constants are imported
         options.setTransportInProtocol(Constants.TRANSPORT_HTTP);
         options.setAction(method);
 
@@ -148,25 +144,23 @@ public class HighScoreServiceClient {
             // Try send request and receive response, could throw AxisFault
             OMElement response = client.sendReceive(request);
 
-            // test / debug
+            // Debug
             printDebug("RESPONSE", response);
 
-            // Return result Response is one or more elements "RetrieveResponse"
-            // with an element "score" of type "EntryType""
-            return XMLUtil.parseScores(response);
+            // Parse and return result
+            Entry[] result = XMLUtil.parseScores(response);
+            return result;
         } catch (AxisFault e) {
-            //TODO - fix error message
-            // throw new java.rmi.RemoteException("operation", e);
             throw new FailureFaultException("Exception from service: ", e);
         }
     }
 
     /**
      * Copied from HelloWorldServiceClient.java
-     * TODO: Write doc
      *
-     * @param message
-     * @param element
+     * @param message A string to be printed before printing information from
+     * element.
+     * @param element The element containing information to be printed.
      */
     private static void printDebug (String message, OMElement element) {
         String propertyDebugMessages = System.getProperty("debug.messages");

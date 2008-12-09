@@ -1,6 +1,6 @@
 /*
  * @(#)RetrieveClient.java
- * Time-stamp: "2008-12-09 15:00:09 anton"
+ * Time-stamp: "2008-12-10 00:08:26 anton"
  */
 
 package se.umu.cs.edu.jap.highscoreservice;
@@ -9,15 +9,23 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import se.umu.cs.edu.jap.highscoreservice.stubs.FailureFaultException;
 
+/**
+ * RetrieveClient simplifies requests to retrieve entries stored in service from
+ * a terminal.
+ *
+ * @author Anton Johansson, dit06ajn@cs.umu.se
+ * @version 1.0
+ */
 public class RetrieveClient {
     private static final String DEFAULT_URL =
-        "http://localhost:8081/axis2/services/HighScoreService";
+        "http://localhost:8080/axis2/services/HighScoreService";
 
     /**
-     * TODO: Have not changed this one.
+     * Copied from HelloWorldService. Gets a System property.
      *
-     * @param name a <code>String</code> value
-     * @return a <code>String</code> value
+     * @param name The property to get.
+     * @return The value stored in the property or an empty string if null is
+     * stored.
      */
     private static String getProperty(String name) {
         String value = System.getProperty(name);
@@ -25,9 +33,11 @@ public class RetrieveClient {
     }
 
     /**
-     * TODO: doc
+     * Runs the program, sets up a request and tries to retrieve all entries
+     * from the DEFAULT_URL service of from the address in property
+     * "service.url" if it is set.
      *
-     * @param args 
+     * @param args Is not used.
      */
     public static void main(String args[]) {
         final String propertyURL = getProperty("service.url");
@@ -53,7 +63,7 @@ public class RetrieveClient {
             System.err.println("Malformed url.");
             System.exit(-1);
         } catch (FailureFaultException e) {
-            System.err.println("Error trying to communicat with Service:"
+            System.err.println("Error trying to communicate with Service: "
                                + urlString);
             System.exit(-1);
         }
