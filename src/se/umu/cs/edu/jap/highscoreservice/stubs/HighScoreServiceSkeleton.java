@@ -1,6 +1,6 @@
 /*
  * @(#)HighScoreServiceSkeleton.java
- * Time-stamp: "2008-12-10 00:00:38 anton"
+ * Time-stamp: "2008-12-10 00:33:20 anton"
  */
 
 package se.umu.cs.edu.jap.highscoreservice.stubs;
@@ -47,27 +47,31 @@ public class HighScoreServiceSkeleton {
      */
     public OMElement store(OMElement storeRequest)
         throws FailureFaultException {
-        HighScoreServiceData data = HighScoreServiceData.getInstance();
-        final String method = "store";
-        OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMNamespace namespace = factory.createOMNamespace(SERVICE, method);
+        try {
+            HighScoreServiceData data = HighScoreServiceData.getInstance();
+            final String method = "store";
+            OMFactory factory = OMAbstractFactory.getOMFactory();
+            OMNamespace namespace = factory.createOMNamespace(SERVICE, method);
 
-        // Parse storeRequest
-        Entry[] entries = XMLUtil.parseScores(storeRequest);
+            // Parse storeRequest
+            Entry[] entries = XMLUtil.parseScores(storeRequest);
 
-        // Add fetched entries to entries
-        for (Entry entry : entries) {
-            data.storeEntry(entry);
-            logger.info("Added entry: " + entry);
+            // Add fetched entries to entries
+            for (Entry entry : entries) {
+                data.storeEntry(entry);
+                logger.info("Added entry: " + entry);
+            }
+
+            // Logs information about all entries in this service.
+            logger.info("All entires in HighScoreServiceData:\n" + data);
+
+            // Create a respons
+            OMElement respons
+                = factory.createOMElement("StoreResponse", namespace);
+            return respons;
+        } catch (Exception e) {
+            throw new FailureFaultException("Operation failure: ", e);
         }
-
-        // Logs information about all entries in this service.
-        logger.info("All entires in HighScoreServiceData:\n" + data);
-
-        // Create a respons
-        OMElement respons
-            = factory.createOMElement("StoreResponse", namespace);
-        return respons;
     }
 
     /**
@@ -83,11 +87,15 @@ public class HighScoreServiceSkeleton {
      */
     public OMElement retrieve(OMElement retrieveRequest)
         throws FailureFaultException {
-        HighScoreServiceData data = HighScoreServiceData.getInstance();
-        Entry[] entries = data.getEntries();
-        OMElement resultElement = XMLUtil.createScoreElements("RetrieveResponse",
-                                                              "retrieve",
-                                                              entries);
-        return resultElement;
+        try {
+            HighScoreServiceData data = HighScoreServiceData.getInstance();
+            Entry[] entries = data.getEntries();
+            OMElement resultElement = XMLUtil.createScoreElements("RetrieveResponse",
+                                                                  "retrieve",
+                                                                  entries);
+            return resultElement;
+        } catch (Exception e) {
+            throw new FailureFaultException("Operation failure: ", e);
+        }
     }
 }
