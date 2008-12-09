@@ -1,6 +1,6 @@
 /*
  * @(#)StoreClient.java
- * Time-stamp: "2008-12-09 23:44:42 anton"
+ * Time-stamp: "2008-12-10 00:18:35 dit06ajn"
  */
 
 package se.umu.cs.edu.jap.highscoreservice;
@@ -18,7 +18,7 @@ import se.umu.cs.edu.jap.highscoreservice.stubs.FailureFaultException;
 public class StoreClient {
 
     private static final String DEFAULT_URL =
-        "http://localhost:8080/axis2/services/HighScoreService";
+        "http://localhost:37080/axis2/services/HighScoreService";
 
     /**
      * Copied from HelloWorldService. Gets a System property.

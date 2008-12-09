@@ -1,6 +1,6 @@
 /*
  * @(#)RetrieveClient.java
- * Time-stamp: "2008-12-10 00:08:26 anton"
+ * Time-stamp: "2008-12-10 00:20:14 dit06ajn"
  */
 
 package se.umu.cs.edu.jap.highscoreservice;
@@ -18,7 +18,7 @@ import se.umu.cs.edu.jap.highscoreservice.stubs.FailureFaultException;
  */
 public class RetrieveClient {
     private static final String DEFAULT_URL =
-        "http://localhost:8080/axis2/services/HighScoreService";
+        "http://localhost:37080/axis2/services/HighScoreService";
 
     /**
      * Copied from HelloWorldService. Gets a System property.
