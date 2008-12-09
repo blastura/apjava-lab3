@@ -29,6 +29,7 @@
 \def\handledareEtt{Johan Eliasson, johane@cs.umu.se}
 \def\handledareTva{Tor Sterner-Johansson, tors@cs.umu.se}
 \def\handledareTre{Daniel Henriksson, danielh@cs.umu.se}
+\def\handledareFyra{Johan Granberg, johang@cs.umu.se}
 
 \def\inst{datavetenskap}
 \def\dokumentTyp{Laborationsrapport}
@@ -57,6 +58,9 @@
     \vfill
     \large{\textbf{Handledare}}\\
     \mbox{\large{\handledareTre}}
+    \mbox{\large{\handledareTva}}
+    \mbox{\large{\handledareEtt}}
+    \mbox{\large{\handledareFyra}}
   \end{center}
 \end{titlepage}
 
@@ -102,7 +106,7 @@ HTTP.
 Webbtjänsten skulle ha funktionalitet som hanterar att från ett anrop
 spara en poängregistrering, bestående av namn, datum och
 poäng. Tjänsten ska även via anrop kunna returnera alla
-poängregistreringar som är sparade. Till detta skulle även en klient
+poäng\-registreringar som är sparade. Till detta skulle även en klient
 implementeras. Klienten skulle kunna skicka meddelande för att spara
 och hämta poäng till och från tjänsten.
 
@@ -177,7 +181,7 @@ För att starta webb-servern och sätta igång webbtjänsten körs skripten:\\
 
 När detta är gjort finns webbtjänsten redo att användas lokalt via:\\
 \begin{footnotesize}
-\verb!http://localhost:8080/axis2/services/HighScoreService!
+\verb!http://localhost:37080/axis2/services/HighScoreService!
 \end{footnotesize}
 
 \subsection{Spara poäng}
@@ -187,7 +191,7 @@ skriptet\linebreak \texttt{store-linux.sh} som i sin tur anropar den
 implementerade Java-klienten \textit{StoreClient}, se källkod bilaga
 \ref{StoreClient.java}. Till detta skript skickas parametrar med som
 anger \textit{namn}, \textit{datum} och \textit{poäng}. För att skicka
-in flera poängregistreringar till tjänsten samtidigt kan flera
+in flera poäng\-registreringar till tjänsten samtidigt kan flera
 parametrar på rad tas emot. Exempel:
 
 \begin{footnotesize}
@@ -213,7 +217,7 @@ bilaga~\ref{RetrieveClient.java}. Exempel:
 \end{footnotesize}
 
 Utöver eventuell debug-utskrift listas från kommandot ovan ut alla
-poängregistreringar som finns sparade i tjänsten:
+poäng\-registreringar som finns sparade i tjänsten:
 
 \begin{footnotesize}
 \begin{verbatim}
@@ -291,7 +295,7 @@ Metoden \textit{store} tar emot en vektor med instanser av klassen
 \textit{StoreRequestType}, enligt WSDL-fil, och skickar dessa till den
 aktuella webbtjänsten.
 
-Metoden \textit{retrieve} hämtar alla poängregistreringar sparade i
+Metoden \textit{retrieve} hämtar alla poäng\-registreringar sparade i
 den aktuella webbtjänsten och returnerar dessa i en vektor
 innehållandes instanser av klassen \textit{Entry}.
 
@@ -306,11 +310,11 @@ adressen till tjänsten till det nya värdet. Standardvärde är:
 
 \begin{footnotesize}
 \begin{verbatim}
-http://localhost:8080/axis2/services/HighScoreService
+http://localhost:37080/axis2/services/HighScoreService
 \end{verbatim}
 \end{footnotesize}
 
-Finns det poängregistreringar sparade i tjänsten skrivs dessa ut till
+Finns det poäng\-registreringar sparade i tjänsten skrivs dessa ut till
 \textit{standard output}, det vill säga terminalen
 \textit{RetrieveClient} anropades från.
 
@@ -325,7 +329,7 @@ adressen till tjänsten till det nya värdet. Standardvärde är:
 
 \begin{footnotesize}
 \begin{verbatim}
-http://localhost:8080/axis2/services/HighScoreService
+http://localhost:37080/axis2/services/HighScoreService
 \end{verbatim}
 \end{footnotesize}
 
@@ -333,7 +337,7 @@ Vid anrop av \textit{StoreClient} läses eventuella parametrar av och
 läggs gruppvis, om tre, in som namn, datum och poäng i nya instanser av
 klassen \textit{Entry}. Dessa skickas sedan med till metoden
 \textit{store} i klassen \textit{HighScoreServiceClient}. Dessa
-poängregistreringar ska sparas i webbtjänsten.
+poäng\-registreringar ska sparas i webbtjänsten.
 
 Källkod finns i bilaga~\ref{StoreClient.java}.
 
@@ -346,7 +350,7 @@ instans av klassen \textit{HighScoreServiceSkeleton} används
 webbtjänsten är igång kommer en och enbart en instans att existera av
 denna klass. En statisk metod för att hämta denna instans finns
 implementerad, utöver det finns metoder för att spara undan och hämta
-poängregistreringar av typen \textit{Entry}.
+poäng\-registreringar av typen \textit{Entry}.
 
 Källkod finns i bilaga~\ref{HighScoreServiceData.java}.
 
@@ -362,7 +366,7 @@ tolkas av klassen \textit{XMLUtil} och sparas undan som instanser av
 typen \textit{Entry} i klassen \textit{HighScoreServiceData}. Ett tomt
 XML-element av typen \textit{StoreResponse} returneras.
 
-Metoden \textit{retrieve} hämtar ut alla poängregistreringar ur
+Metoden \textit{retrieve} hämtar ut alla poäng\-registreringar ur
 instansen av \textit{HighScoreServiceData} lägger in dem i ett
 XML-element med hjälp av en metod i klassen \textit{XMLUtil}. Detta
 element returneras från metoden.
@@ -432,10 +436,15 @@ blir detta en ändring av laborationsspecifikationen vilket innebär att
 det kanske borde ses som en annan lösning och inte som en begränsning.
 
 Tjänsten som är implementerad sparar inte undan informationen om
-poängregistreringar till disk eller till någon typ av databas. Detta
+poäng\-registreringar till disk eller till någon typ av databas. Detta
 medför att varje gång servern startas om så kommer all information att
 gå förlorad. En lösning till detta är att spara ner informationen till
 antingen XML-filer/fil eller att använda en databas.
+
+Sättet att hantera undantag i klassen
+\textit{HighScoreServiceSkeleton} skickar med alla typer av undantag
+med all information om undantaget till klienten. Detta kan innebära
+vissa säkerhetsrisker och bör ses över.
 
 \section{Reflektioner}\label{Reflektioner}
 % Reflektioner - Var det något som var speciellt krångligt? Vilka
@@ -468,7 +477,7 @@ Följande avsnitt beskriver några olika scenarion vid användande av
 webbtjänsten. Alla kommandon som följer förutsätter att en webbserver
 är igång på adress:
 \begin{footnotesize}
-\verb!http://localhost:8080/axis2/services/HighScoreService!
+\verb!http://localhost:37080/axis2/services/HighScoreService!
 \end{footnotesize}
 
 Förutsatt är även att \textit{System property}, \verb!service.url!
@@ -526,7 +535,7 @@ anropet i XML~\ref{xml:store1}:
 \end{verbatim}
 \end{footnotesize}
 
-För att spara två poängregistreringar samtidigt körs: 
+För att spara två poäng\-registreringar samtidigt körs: 
 
 \begin{footnotesize}
 \verb!salt:~/edu/apjava/lab3> ./store-linux.sh Pelle tors 12 Lena fre 142!
@@ -584,7 +593,7 @@ XML~\ref{xml:storeresponse}.
 \end{xml}
 
 \subsection{Hämta poäng}
-Efter poängregistreringarna i sektion \ref{sec:spara} är gjorda
+Efter poäng\-registreringarna i sektion \ref{sec:spara} är gjorda
 kommer webbtjänsten att innehålla tre poster. Dessa kan hämtas med
 kommandot:
 
