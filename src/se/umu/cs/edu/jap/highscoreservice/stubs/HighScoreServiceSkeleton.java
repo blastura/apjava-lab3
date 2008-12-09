@@ -1,6 +1,6 @@
 /*
  * @(#)HighScoreServiceSkeleton.java
- * Time-stamp: "2008-12-07 23:25:59 anton"
+ * Time-stamp: "2008-12-09 15:47:13 anton"
  */
 
 package se.umu.cs.edu.jap.highscoreservice.stubs;
@@ -25,7 +25,6 @@ public class HighScoreServiceSkeleton {
         "http://nemi.cs.umu.se:8080/axis2/services/HighScoreService";
 
     public HighScoreServiceSkeleton() {
-        // TODO: Remove, this was just for debugging.
         logger.info("New instance of HighScoreServiceSkeleton created.");
     }
     

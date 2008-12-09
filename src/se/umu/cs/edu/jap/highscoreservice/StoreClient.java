@@ -1,6 +1,6 @@
 /*
  * @(#)StoreClient.java
- * Time-stamp: "2008-12-08 12:23:25 anton"
+ * Time-stamp: "2008-12-09 13:28:31 anton"
  */
 
 package se.umu.cs.edu.jap.highscoreservice;
@@ -31,7 +31,7 @@ public class StoreClient {
 
         if (args.length < 3 || (args.length % 3) != 0) {
             System.out.println("Usage:");
-            System.out.println("  java StoreClient [<name> <date> <score>]+");
+            System.out.println("  java StoreClient (<name> <date> <score>)+");
             return;
         }
         

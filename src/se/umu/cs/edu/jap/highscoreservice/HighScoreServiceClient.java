@@ -1,6 +1,6 @@
 /*
  * @(#)HighScoreServiceClient.java
- * Time-stamp: "2008-12-08 12:12:51 anton"
+ * Time-stamp: "2008-12-08 15:54:02 anton"
  */
 
 package se.umu.cs.edu.jap.highscoreservice;

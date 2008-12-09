@@ -1,6 +1,6 @@
 /*
  * @(#)RetrieveClient.java
- * Time-stamp: "2008-12-08 12:17:27 anton"
+ * Time-stamp: "2008-12-09 15:00:09 anton"
  */
 
 package se.umu.cs.edu.jap.highscoreservice;
@@ -11,7 +11,6 @@ import se.umu.cs.edu.jap.highscoreservice.stubs.FailureFaultException;
 
 public class RetrieveClient {
     private static final String DEFAULT_URL =
-        //"http://nemi.cs.umu.se:8080/axis2/services/HighScoreService";
         "http://localhost:8081/axis2/services/HighScoreService";
 
     /**
@@ -54,7 +53,8 @@ public class RetrieveClient {
             System.err.println("Malformed url.");
             System.exit(-1);
         } catch (FailureFaultException e) {
-            e.printStackTrace();            
+            System.err.println("Error trying to communicat with Service:"
+                               + urlString);
             System.exit(-1);
         }
     }

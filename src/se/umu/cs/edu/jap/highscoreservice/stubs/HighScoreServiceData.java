@@ -1,6 +1,6 @@
 /*
  * @(#)HighScoreServiceData.java
- * Time-stamp: "2008-12-08 11:53:48 anton"
+ * Time-stamp: "2008-12-09 15:30:25 anton"
  */
 
 package se.umu.cs.edu.jap.highscoreservice.stubs;
@@ -39,19 +39,19 @@ public class HighScoreServiceData {
         return INSTANCE;
     }
 
-    public Entry[] getEntries() {
+    public synchronized Entry[] getEntries() {
         Entry[] result = new Entry[entries.size()];
         entries.toArray(result);
         return result;
     }
 
-    public void storeEntry(Entry entry) {
+    public synchronized void storeEntry(Entry entry) {
         logger.info("New entry stored: " + entry + ".");
         entries.add(entry);
     }
     
     @Override
-    public String toString() {
+    public synchronized String toString() {
         String result = "";
         for (Entry entry : entries) {
             result += entry.toString() + "\n";

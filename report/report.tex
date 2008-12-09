@@ -5,6 +5,8 @@
 \usepackage{fancyhdr}
 \usepackage{graphicx}
 \usepackage{parskip}
+\usepackage{minitoc}
+
 % Include pdf with multiple pages ex \includepdf[pages=-, nup=2x2]{filename.pdf}
 \usepackage[final]{pdfpages}
 % Place figures where they should be
@@ -12,11 +14,11 @@
 
 % Float for text
 \floatstyle{ruled}
-\newfloat{program}{thp}{lop}
-\floatname{program}{XML}
+\newfloat{xml}{H}{lop}
+\floatname{xml}{XML}
 
 % vars
-\def\title{Web services}
+\def\title{Webb-tjänster}
 \def\preTitle{Laboration 3}
 \def\kurs{Applikationsprogrammering i Java, HT-08}
 
@@ -77,6 +79,7 @@
 
 \cleardoublepage
 \newpage
+\dosecttoc 
 \tableofcontents
 \cleardoublepage
 
@@ -86,62 +89,592 @@
 \section{Problemspecifikation}\label{Problemspecifikation}
 % Beskriv med egna ord vad uppgiften gick ut på. Är det någonting som
 % varit oklart och ni gjort egna tolkningar så beskriv dessa.
+Laborationen gick ut på att implementera en webb-tjänst för att skicka
+och ta emot information över nätet, så kallad
+interprocesskommunikation, från engelskans \textit{inter-process
+  communication}, förkortat \textit{IPC}. Givet var en XML-fil, där
+webbtjänsten var beskriven enligt \textit{WSDL}, \textit{Web Services
+  Description Language}. Denna fil specificerar hur meddelanden ska
+vara utformade när de skickas och hur svaren kommer att se
+ut. Kommunikationen är även den XML-baserad och sköts via protokollet
+HTTP.
 
-Problemspecifikation finns i original på:\\
-\verb!http://www.cs.umu.se/kurser/5DV085/HT08/labbar/lab2.html!
+Webb-tjänsten skulle ha funktionalitet som hanterar att från ett anrop
+spara en poäng-registrering, bestående av namn, datum och
+poäng. Tjänsten ska även via anrop kunna returnera alla
+poäng-registreringar som är sparade. Till detta skulle även en klient
+implementeras. Klienten skulle kunna skicka meddelande för att spara
+och hämta poäng till och från tjänsten.
+
+För denna implementering var det givet en utvecklingsmiljö bestående
+av en webb-server och ett påbörjat projekt där vissa klasser var
+givna/genererade. Utvecklingsmiljön finns på sidan:\\
+\begin{footnotesize}
+\verb!http://www.cs.umu.se/kurser/5DV085/HT08/assignments/environment/!
+\end{footnotesize}
+
+Problemspecifikation finns i original på sidan:\\
+\begin{footnotesize}
+\verb!http://www.cs.umu.se/kurser/5DV085/HT08/assignments/3/!
+\end{footnotesize}
 
 \section{Användarhandledning}\label{Anvandarhandledning}
-% Förklara var programmet och källkoden ligger samt hur man startar,
-% kompilerar och använder det.
+% Förklara var programmet och källkoden ligger samt hur man kompilerar,
+% startar och använder det. Förklara även översiktligt vad som händer
+% när man använder de olika kommandona. Det räcker alltså inte att
+% skriva "man skriver 'ant' för att kompilera", utan det måste även ingå
+% en liten förklaring om vad som egentligen händer när man kör ant och
+% varför det fungerar. Använd Internet eller litteratur för att själva
+% ta reda på den information ni tycker känns relevant, dels för
+% rapportens skull och dels för er egen. Kom ihåg att skriva tydliga
+% (vetenskapliga) referenser!
+
 Programmet ligger i katalogen:\\
 \texttt{\pathtocode}
 
-Från denna katalog kompileras programmet med kommandot:
-%TODO: flytta apache-tomcat rätt
-\verb!salt:~/edu/apjava/lab3> ant!
-
-De kompilerade filerna hamnar i underkatalogen \verb!bin!. Från denna
-katalog körs programmet med kommandot
-
-\verb!salt:~/edu/apjava/lab2/bin> java -cp .:../lib/jdom.jar JeedReader!
-
-Alternativt kan programmet köras direkt från huvudmappen med
-kommandot:
-
-\verb!salt:~/edu/apjava/lab2> ant test-run!
-
-
 Källkoden ligger i underkatalogen \verb!src!.
+
+För att köra detta program krävs en webb-servern med bifogade paket
+som finns i
+utvecklingsmiljön\footnote{http://www.cs.umu.se/kurser/5DV085/HT08/assignments/environment/}.
+I denna miljö följer även ett antal skript för att starta,
+uppdatera och stänga av webb-servern.
+
+Följande kommandon förutsätter att programmet \textit{Apache
+  Ant}\footnote{http://ant.apache.org/} är installerat och att mappen
+\verb!apache-tomcat-6.0.16!  från utvecklingsmiljön är uppackad och
+ligger i katalogen över det där programmet ligger, det vill säga:
+\verb!~dit06ajn/apjava/apache-tomcat-6.0.16!.
+
+Verktyget \textit{Ant} är ett byggverktyg som använder sig av
+specifikationen lagrad i en XML-fil, oftast \textit{build.xml}, för
+automatisera alla nödvändiga operationen vid kompilering av ett
+projekt. Detta kan innefatta all typ av filhantering, det vill säga
+kopiering, borttagning och flyttning, men även själva kompileringen av
+projektet. Verktyget kan ses som ett specialanpassat skript för att
+kompilera hela projekt.
+
+% TODO: flytta apache-tomcat rätt
+Programmet kompileras med kommandot:\\
+\begin{footnotesize}
+\verb!salt:~/edu/apjava/lab3> ant!
+\end{footnotesize}
+
+Det som händer vid anrop av kommandot ovan är att \textit{Ant} läser
+av filen \textit{build.xml} och letar efter standardkommandona att
+köra. I det här fallet är det operationerna som är definierade i
+XML-elementet \verb!<target />! med attributet \verb!name="dist"!. Se
+bildaga~\ref{build.xml} för mer information om vad som händer. Oftast
+har taggarna i \textit{build.xml} relativt självförklarande namn, de
+motsvarar i många fall direkta kommandon som går att köra i en
+terminal.
+
+För att starta webb-servern och sätta igång webb-tjänsten körs skripten:\\
+\begin{footnotesize}
+\verb!salt:~/edu/apjava/lab3> ./deploy-linux.sh !\\
+\verb!salt:~/edu/apjava/lab3> ./start-linux.sh !
+\end{footnotesize}
+
+När detta är gjort finns webb-tjänsten redo att användas lokalt via:\\
+\begin{footnotesize}
+\verb!http://localhost:8080/axis2/services/HighScoreService!
+\end{footnotesize}
+
+\subsection{Spara poäng}
+
+För att spara en eller flera poäng till tjänsten används lättast
+skriptet\linebreak \texttt{store-linux.sh} som i sin tur anropar den
+implementerade Java-klienten \textit{StoreClient}, se källkod bilaga
+\ref{StoreClient.java}. Till detta skript skickas parametrar med som
+anger \textit{namn}, \textit{datum} och \textit{poäng}. För att skicka
+in flera poäng-registreringar till tjänsten samtidigt kan flera
+parametrar på rad tas emot. Exempel:
+
+\begin{footnotesize}
+\verb!salt:~/edu/apjava/lab3> ./store-linux.sh Anton tors 100 Olle fre 123!
+\end{footnotesize}
+
+Kommandot ovan kommer att spara en registrering på namn \verb!Anton!,
+datum \verb!tors! med poäng \verb!100! och en registrering på namn
+\verb!Olle!, datum \verb!fre! med poäng \verb!123!. Det finns inga
+restriktioner på vad som kan sparas i varje fält förutom att
+mellanslag inte kan förekomma när man anropar klienten via detta
+skript.
+
+\subsection{Hämta poäng}
+
+För att hämta poäng som finns sparade i webb-tjänsten körs lättast
+skriptet \texttt{retrieve-linux.sh} som anropar Java-klienten
+\textit{RetrieveClient}, se källkod i
+bilaga~\ref{RetrieveClient.java}. Exempel:
+
+\begin{footnotesize}
+\verb!salt:~/edu/apjava/lab3> ./retrieve-linux.sh !
+\end{footnotesize}
+
+Utöver eventuell debug-utskrift listas från kommandot ovan ut alla
+poäng-registreringar som finns sparade i tjänsten:
+
+\begin{footnotesize}
+\begin{verbatim}
+Retrieved 2 entries.
+Name:  Anton
+Date:  tors
+Score: 100
+
+Name:  Olle
+Date:  fre
+Score: 123
+\end{verbatim}
+\end{footnotesize}
+
+\subsection{Inställningar}
+För att ändra adressen till webb-tjänsten som klienterna,
+\textit{StoreClient} och \textit{RetrieveClient}, ska anropa sätts en
+\textit{System property}, \verb!service.url! till önskad URL.
+
+För att slippa debug-utskrifter sätts, \textit{System property}, 
+\verb!debug.messages! till allt förutom \textit{true}. Som standard
+sätts denna property till \textit{true} inuti skripten
+\verb!store-linux.sh! och \verb!retrieve-linux.sh!.
+
+\subsection{Webbgränssnitt}
+Ett webbgränssnitt finns implementerat och kan testas via sidan:
+
+\begin{footnotesize}
+\verb!http://salt.cs.umu.se:37080/dit06ajn/!
+\end{footnotesize}
+
+Detta gränssnitt och tjänsten den använder kommer att finnas
+tillgänglig någon vecka framåt från och med 9 december 2008. Källkod
+finns i bilaga \ref{index.jsp}.
 
 \section{Systembeskrivning}\label{Systembeskrivning}
 % Beskriv översiktligt hur programmet är uppbyggt och hur det löser
 % problemet.
 
+Systemet består i huvudsak av två delar, en klient och en
+server. Dessa två används oberoende av varandra men använder sig vid
+kompilering av två gemensamma klasser, \textit{Entry} och
+\textit{XMLUtil}. Det som gör att klienten och servern kan prata med
+varandra är att de använder sig av samma specifikation för meddelanden
+som skickas och tas emot, se avsnitt~\ref{sec:highscoreservice.wsdl}.
+
+Nedan avsnitt går igenom systemets olika klasser, även andra klasser
+är aktiva i webb-tjänsten, dessa är dock genererade utifrån
+\textit{WSDL}-filen och kommer inte att beskrivas i denna rapport.
+
+\subsection{Entry}
+Klassen \textit{Entry} fanns bifogad i utvecklingsmiljön. Klassen
+representerar en poängregistrering i webb-tjänsten, namn, datum och
+poäng kan sparas undan och hämtas ut.
+
+Källkod finns i bilaga~\ref{Entry.java}.
+
+\subsection{XMLUtil}
+Klassen \textit{XMLUtil} används av både servern och klienterna för
+att tolka XML-element som innehåller ett eller flera
+\textit{score}-element av typen \textit{EntryType} beskrivet i
+XML-schemat från \textit{WSDL}-filen. Klassen har även en metod som
+kan skapa en eller flera instanser av klassen \textit{Entry} från
+givet XML-element beskrivet ovan.
+
+Källkod finns i bilaga~\ref{XMLUtil.java}.
+
+\subsection{HighScoreServiceClient}
+Klassen \textit{HighScoreServiceClient} implementerar två metoder
+\textit{store} och \textit{retrive}. Klassens konstruktor tar emot en
+URL som anger adressen webb-tjänsten som ska användas.
+
+Metoden \textit{store} tar emot en vektor med instanser av klassen
+\textit{Entry}, formaterar dessa till ett XML-element av typen
+\textit{StoreRequestType}, enligt WSDL-fil, och skickar dessa till den
+aktuella webb-tjänsten.
+
+Metoden \textit{retrieve} hämtar alla poäng-registreringar sparade i
+den aktuella webb-tjänsten och returnerar dessa i en vektor
+innehållandes instanser av klassen \textit{Entry}.
+
+Källkod finns i bilaga~\ref{HighScoreServiceClient.java}.
+
+\subsection{RetrieveClient}
+Klassen \textit{RetrieveClient} är till för att via en terminal på ett
+enkelt sätt kunna anropa klassen \textit{HighScoreServiceClient}s
+metod \textit{retrieve}. Vid start av \textit{RetrieveClient} kollas
+\textit{System property}, \verb!service.url!, är denna satt ändras
+adressen till tjänsten till det nya värdet. Standardvärde är:
+
+\begin{footnotesize}
+\begin{verbatim}
+http://localhost:8080/axis2/services/HighScoreService
+\end{verbatim}
+\end{footnotesize}
+
+Finns det poäng-registreringar sparade i tjänsten skrivs dessa ut till
+\textit{standard output}, det vill säga terminalen
+\textit{RetrieveClient} anropades från.
+
+Källkod finns i bilaga~\ref{RetrieveClient.java}.
+
+\subsection{StoreClient}
+Klassen \textit{StoreClient} är till för att via en terminal på ett
+enkelt sätt kunna anropa klassen \textit{HighScoreServiceClient}s
+metod \textit{store}. Vid start av \textit{RetrieveClient} kollas
+\textit{System property}, \verb!service.url!, är denna satt ändras
+adressen till tjänsten till det nya värdet. Standardvärde är:
+
+\begin{footnotesize}
+\begin{verbatim}
+http://localhost:8080/axis2/services/HighScoreService
+\end{verbatim}
+\end{footnotesize}
+
+Vid anrop av \textit{StoreClient} läses eventuella parametrar av och
+läggs gruppvis, om tre, in som namn, datum och poäng i nya instanser av
+klassen \textit{Entry}. Dessa skickas sedan med till metoden
+\textit{store} i klassen \textit{HighScoreServiceClient}. Dessa
+poäng-registreringar ska sparas i webb-tjänsten.
+
+Källkod finns i bilaga~\ref{StoreClient.java}.
+
+\subsection{HighScoreServiceData}
+Klassen \textit{HighScoreServiceData} sparar undan all information i
+webb-tjänsten. Eftersom varje anrop till webbtjänsten genererar en ny
+instans av klassen \textit{HighScoreServiceSkeleton} används
+\textit{HighScoreServiceData} som en \textit{Singleton}, se boken
+\textit{Design Patterns}~\cite{gamma}. Detta innebär att så länge
+webb-tjänsten är igång kommer en och enbart en instans att existera av
+denna klass. En statisk metod för att hämta denna instans finns
+implementerad, utöver det finns metoder för att spara undan och hämta
+poäng-registreringar av typen \textit{Entry}.
+
+Källkod finns i bilaga~\ref{HighScoreServiceData.java}.
+
+\subsection{HighScoreServiceSkeleton}
+Klassen \textit{HighScoreServiceSkeleton} hanterar slutändan av de
+faktiska till webb-tjänsten. Klassens metoder \textit{store} och
+\textit{retrieve} sköter logiken för de två olika anropen till
+webb-tjänsten.
+
+Metoden \textit{store} tar emot ett XML-element som kan innehålla ett
+eller flera \textit{score}-element av typen \textit{EntryType}. Dessa
+tolkas av klassen \textit{XMLUtil} och sparas undan som instanser av
+typen \textit{Entry} i klassen \textit{HighScoreServiceData}. Ett tomt
+XML-element av typen \textit{StoreResponse} returneras.
+
+Metoden \textit{retrieve} hämtar ut alla poäng-registreringar ur
+instansen av \textit{HighScoreServiceData} lägger in dem i ett
+XML-element med hjälp av en metod i klassen \textit{XMLUtil}. Detta
+element returneras från metoden.
+
+Källkod finns i bilaga~\ref{HighScoreServiceSkeleton.java}.
+
+\subsection{Filen highscoreservice.wsdl}\label{sec:highscoreservice.wsdl}
+Filen \textit{highscoreservice.wsdl} är definitionen av själva
+webb-tjänsten. Här beskrivs de metoder och meddelanden som tjänsten
+arbetar med. Två metoder \textit{store} och \textit{retrieve} finns
+beskrivna, dess indata och utdata är specificerade i ett
+XML-schema.
+
+Operationen \textit{store} har indata enligt
+XML~\ref{StoreRequest}. Utdata är ett XML-element
+\verb!<StoreResponse/>!.
+
+Operationen \textit{retrieve} har ett XML-element
+\verb!<RetrieveRequest/>! som indata. Utdata från operationen följer
+utseendet på XML~\ref{RetrieveResponse}.
+
+\begin{xml}
+\begin{verbatim}
+<StoreRequest>
+  <score>
+    <name></name>
+    <date></date>
+    <score></score>
+  </score>
+  <!-- fler scores-element -->
+</StoreRequest>
+\end{verbatim}
+  \caption{StoreRequest}\label{StoreRequest}
+\end{xml}
+
+
+\begin{xml}
+\begin{verbatim}
+<RetrieveResponse>
+  <score>
+    <name></name>
+    <date></date>
+    <score></score>
+  </score>
+  <!-- fler scores-element -->
+</RetrieveResponse>
+\end{verbatim}
+  \caption{RetrieveResponse}\label{RetrieveResponse}
+\end{xml}
+
+Filens \textit{highscoreservice.wsdl} innehåll finns i
+bilaga~\ref{highscoreservice.wsdl}.
 
 \section{Begränsningar}\label{Begransningar}
 % Vilka problem och begränsningar har din lösning av uppgiften? Hur
 % skulle de kunna rättas till?
+Varken servern eller klienten säkerhetställer korrekta meddelanden in
+och ut genom att validera mot schemat som finns beskrivet i
+\textit{WSDL}-filen. Detta skulle kunna lösas genom att extrahera
+schemat från denna fil och validera XML-elementen som skickas och tas
+emot mot denna information.
+
+Eftersom alla meddelanden skickas som text-strängar kommer namn, datum
+och poäng kunna innehålla vad som helst. Detta borde gå att lösa genom
+att införa restriktioner i XML-schemat som finns i WSDL-filen. Dock
+blir detta en ändring av laborationsspecifikationen vilket innebär att
+det kanske borde ses som en annan lösning och inte som en begränsning.
+
+Tjänsten som är implementerad sparar inte undan informationen om
+poäng-registreringar till disk eller till någon typ av databas. Detta
+medför att varje gång servern startas om så kommer all information att
+gå förlorad. En lösning till detta är att spara ner informationen till
+antingen XML-filer/fil eller att använda en databas.
 
 \section{Reflektioner}\label{Reflektioner}
-% Var det något som var speciellt krångligt? Vilka problem uppstod och
-% hur löste ni dem? Allmänna synpunkter. Hur skulle man kunna använda
-% dessa metoder i andra mer omfattande system?
+% Reflektioner - Var det något som var speciellt krångligt? Vilka
+% problem uppstod och hur löste ni dem? Vilka verktyg använde ni? Hur
+% upplevde ni de verktygen? + Allmänna synpunkter. Om ni har upplevt
+% problem på grund av olika miljöer (i termer av operativsystem och
+% liknande) så kan det även vara intressant att nämna det, samt motivera
+% ert val av miljö.
+
+Svårigheterna med denna laboration bestod i att få ihop
+utvecklingsmiljön och förstå hur de olika skripten och klasserna
+hängde ihop och kommunicerade.
+
+Jag använde mig till största del av operativsystemet \textit{OSX
+  Leopard} och textredigeraren \textit{emacs} för att utveckla detta
+program. Detta på grund av vana och eftersom det innebär att det utan
+modifikationer går flytta projektet till skolans datorer och köra dem
+där med samma skript. Dock flyttade jag och ändrade i de givna
+skripten för att använda mig av den version av \textit{Java} och
+\textit{Ant} som redan är installerade på respektive datorer.
+
+Detta system hade ändras något och användas som ett komplement till
+ett spel där man vill spara en global rekordlista tillgänglig för alla
+som har Internetuppkoppling.
 
 \section{Testkörningar}\label{Testkorningar}
 % Noggranna testkörningar där man ser att programmet fungerar som det
 % ska.
+Följande avsnitt beskriver några olika scenarion vid användande av
+webb-tjänsten. Alla kommandon som följer förutsätter att en webbserver
+är igång på adress:
+\begin{footnotesize}
+\verb!http://localhost:8080/axis2/services/HighScoreService!
+\end{footnotesize}
+
+Förutsatt är även att \textit{System property}, \verb!service.url!
+inte är ändrat.
+
+Programmet \textit{Apache
+  TCPMon}\footnote{http://ws.apache.org/commons/tcpmon/} är använt för
+att fånga anrop till och från webb-servern.
+
+\subsection{Spara poäng}\label{sec:spara}
+
+För att spara en poäng-registrering körs:
+
+\begin{footnotesize}
+\verb!salt:~/edu/apjava/lab3> ./store-linux.sh anton idag 101!
+\end{footnotesize}
+
+Ovan kommando genererar ett anrop till webbtjänsten. Den del av
+anropet som denna laboration har handlat om ses i
+XML~\ref{xml:store1}.
+
+\begin{xml}
+  \begin{footnotesize}
+\begin{verbatim}
+<store:StoreRequest
+ xmlns:store="http://nemi.cs.umu.se:8080/axis2/services/HighScoreService">
+   <store:score>
+      <store:name>anton</store:name>
+      <store:date>idag</store:date>
+      <store:score>101</store:score>
+   </store:score>
+</store:StoreRequest>
+\end{verbatim}
+  \end{footnotesize}
+  \caption{StoreRequest, en poäng-registrering}\label{xml:store1}
+\end{xml}
+
+Webbservern loggar meddelanden från tjänsten i filen:
+
+\begin{footnotesize}
+\verb!~dit06ajn/apjava/apache-tomcat-6.0.16/logs/catalina.out!
+\end{footnotesize}
+
+Nedan textrader är resultatet i filen \verb!catalina.out! efter
+anropet i XML~\ref{xml:store1}:
+
+\begin{footnotesize}
+\begin{verbatim}
+[INFO] New instance of HighScoreServiceSkeleton created.
+[INFO] New instance fo HighScoreServiceData created.
+[INFO] New entry stored: 101 (anton @ idag).
+[INFO] Added entry: 101 (anton @ idag)
+[INFO] All entires in HighScoreServiceData:
+101 (anton @ idag)
+\end{verbatim}
+\end{footnotesize}
+
+För att spara två poäng-registreringar samtidigt körs: 
+
+\begin{footnotesize}
+\verb!salt:~/edu/apjava/lab3> ./store-linux.sh Pelle tors 12 Lena fre 142!
+\end{footnotesize}
+
+Detta resulterar i anropet som syns i XML~\ref{xml:store2}. Nedan
+textrader är förändringen i \verb!catalina.out!:
+
+\begin{footnotesize}
+\begin{verbatim}
+[INFO] New instance of HighScoreServiceSkeleton created.
+[INFO] New entry stored: 12 (Pelle @ tors).
+[INFO] Added entry: 12 (Pelle @ tors)
+[INFO] New entry stored: 142 (Lena @ fre).
+[INFO] Added entry: 142 (Lena @ fre)
+[INFO] All entires in HighScoreServiceData:
+101 (anton @ idag)
+12 (Pelle @ tors)
+142 (Lena @ fre)
+\end{verbatim}
+\end{footnotesize}
+
+Alla \textit{StoreRequest}-anrop genererar ett svar som ses i
+XML~\ref{xml:storeresponse}.
+
+\begin{xml}
+  \begin{footnotesize}
+\begin{verbatim}
+<store:StoreRequest
+ xmlns:store="http://nemi.cs.umu.se:8080/axis2/services/HighScoreService">
+   <store:score>
+      <store:name>Pelle</store:name>
+      <store:date>tors</store:date>
+      <store:score>12</store:score>
+   </store:score>
+   <store:score>
+      <store:name>Lena</store:name>
+      <store:date>fre</store:date>
+      <store:score>142</store:score>
+   </store:score>
+</store:StoreRequest>
+\end{verbatim}
+  \end{footnotesize}
+  \caption{StoreRequest, två poäng-registreringar samtidigt}\label{xml:store2}
+\end{xml}
+
+\begin{xml}
+  \begin{footnotesize}
+\begin{verbatim}
+<store:StoreResponse
+ xmlns:store="http://nemi.cs.umu.se:8080/axis2/services/HighScoreService" />
+\end{verbatim}
+  \end{footnotesize}
+  \caption{StoreResponse}\label{xml:storeresponse}
+\end{xml}
+
+\subsection{Hämta poäng}
+Efter poäng-registreringarna i sektion \ref{sec:spara} är gjorda
+kommer webb-tjänsten att innehålla tre poster. Dessa kan hämtas med
+kommandot:
+
+\begin{footnotesize}
+\verb!salt:~/edu/apjava/lab3> ./retrieve-linux.sh!
+\end{footnotesize}
+
+Är \textit{System property}, \verb!debug.messages! inte satt till
+\textit{true}, kommer ovan kommando resultera i följande utskrift:
+
+\begin{footnotesize}
+\begin{verbatim}
+Retrieved 3 entries.
+Name:  anton
+Date:  idag
+Score: 101
+
+Name:  Pelle
+Date:  tors
+Score: 12
+
+Name:  Lena
+Date:  fre
+Score: 142
+\end{verbatim}
+\end{footnotesize}
+
+Anropet som skickas till servern består av meddelandet i
+XML~\ref{xml:retrieverequest}. Det som fås tillbaka från webb-tjänsten
+visas i XML~\ref{xml:retrieveresponse}.
+
+\begin{xml}
+  \begin{footnotesize}
+\begin{verbatim}
+<retrieve:RetrieveRequest
+ xmlns:retrieve="http://nemi.cs.umu.se:8080/axis2/services/HighScoreService" />
+\end{verbatim}
+  \end{footnotesize}
+  \caption{RetrieveRequest}\label{xml:retrieverequest}
+\end{xml}
+
+\begin{xml}
+  \begin{footnotesize}
+\begin{verbatim}
+<retrieve:RetrieveResponse
+ xmlns:retrieve="http://nemi.cs.umu.se:8080/axis2/services/HighScoreService">
+   <retrieve:score>
+      <retrieve:name>anton</retrieve:name>
+      <retrieve:date>idag</retrieve:date>
+      <retrieve:score>101</retrieve:score>
+   </retrieve:score>
+   <retrieve:score>
+      <retrieve:name>Pelle</retrieve:name>
+      <retrieve:date>tors</retrieve:date>
+      <retrieve:score>12</retrieve:score>
+   </retrieve:score>
+   <retrieve:score>
+      <retrieve:name>Lena</retrieve:name>
+      <retrieve:date>fre</retrieve:date>
+      <retrieve:score>142</retrieve:score>
+   </retrieve:score>
+</retrieve:RetrieveResponse>
+\end{verbatim}
+  \end{footnotesize}
+  \caption{RetrieveResponse}\label{xml:retrieveresponse}
+\end{xml}
 
 \section{Diskussion}\label{Diskussion}
-% Hur fungerade det att följa en kodkonvention? Vilka var fördelarna
-% respektive nackdelarna?
+% Diskutera om laborationen samt allmänt kring Web services och om hur
+% och när det är användbart (och inte användbart). Saker som kan vara
+% trevliga att ta upp är interoperabilitet, lite om prestanda, koncepten
+% lös koppling och så vidare. Den här sektionen ska vara en betydande
+% del av rapporten. Det är upp till er själva att ta reda på den
+% information ni behöver, även om föreläsningsmaterialet kan vara
+% väldigt användbart. Kom även här ihåg att referera till era källor
+% (även om det är från föreläsningsmaterialet).
+
+
+\bibliographystyle{plain}
+\bibliography{books.bib}
+
 
 \newpage
 \appendix
 \pagenumbering{arabic}
-\section{Källkod}\label{Kallkod}
+\section{Bilagor}\label{Bilagor}
 % Källkoden ska finnas tillgänglig i er hemkatalog
 % ~/edu/apjava/lab1/. Bifoga även utskriven källkod.
-Härefter följer utskrifter från källkoden till denna laboration.
+Härefter följer utskrifter från källkoden och andra filer som hör till
+denna laboration.
 
 \newpage
 \subsection{Entry.java}\label{Entry.java}
@@ -180,12 +713,6 @@ Härefter följer utskrifter från källkoden till denna laboration.
 \end{footnotesize}
 
 \newpage
-\subsection{HighScoreServiceMessageReceiverInOut.java}\label{HighScoreServiceMessageReceiverInOut.java}
-\begin{footnotesize}
-  \verbatiminput{../src/se/umu/cs/edu/jap/highscoreservice/stubs/HighScoreServiceMessageReceiverInOut.java}
-\end{footnotesize}
-
-\newpage
 \subsection{HighScoreServiceSkeleton.java}\label{HighScoreServiceSkeleton.java}
 \begin{footnotesize}
   \verbatiminput{../src/se/umu/cs/edu/jap/highscoreservice/stubs/HighScoreServiceSkeleton.java}
@@ -213,6 +740,18 @@ Härefter följer utskrifter från källkoden till denna laboration.
 \subsection{highscoreservice.wsdl}\label{highscoreservice.wsdl}
 \begin{footnotesize}
   \verbatiminput{../wsdl/highscoreservice.wsdl}
+\end{footnotesize}
+
+\newpage
+\subsection{build.xml}\label{build.xml}
+\begin{footnotesize}
+  \verbatiminput{../build.xml}
+\end{footnotesize}
+
+\newpage
+\subsection{index.jsp}\label{index.jsp}
+\begin{footnotesize}
+  \verbatiminput{../../apache-tomcat-6.0.16/webapps/dit06ajn/index.jsp}
 \end{footnotesize}
 
 \end{document}
